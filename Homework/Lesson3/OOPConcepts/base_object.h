@@ -9,6 +9,7 @@ class base_object
 {
 public:
     explicit base_object(std::string name);
+    virtual ~base_object() = default;
 
     const std::string& get_name() const;
     uint64_t get_id() const;
