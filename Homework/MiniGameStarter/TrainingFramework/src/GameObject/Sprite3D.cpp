@@ -40,7 +40,7 @@ void Sprite3D::Draw()
 	glEnable(GL_DEPTH_TEST);
 
 	// All object
-	matrixWVP = m_worldMatrix * m_pCamera->GetLookAtCameraMatrix();
+	matrixWVP = m_worldMatrix * m_pCamera->GetLookAtMatrix();
 
 	if (m_pTexture != nullptr)
 	{

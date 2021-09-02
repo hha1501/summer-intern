@@ -9,7 +9,10 @@ public:
 	~GameButton();
 	void	SetOnClick(void	(*pBtClick)());
 	bool	HandleTouchEvents(GLint x, GLint y, bool bIsPressed);
-	bool	IsHolding();
+	bool	IsHolding() const;
+
+private:
+	bool	TestPointInBounds(GLint x, GLint y) const;
 
 private:
 	void	(*m_pBtClick)();

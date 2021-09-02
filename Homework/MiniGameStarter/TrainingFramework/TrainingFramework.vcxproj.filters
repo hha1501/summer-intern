@@ -72,6 +72,14 @@
     <ClCompile Include="src\GameStates\GSCredit.cpp">
       <Filter>TrainingFramework\src\GameStates</Filter>
     </ClCompile>
+    <ClCompile Include="src\Game\GameWorld.cpp" />
+    <ClCompile Include="src\Game\Entity\PlayerEntity.cpp" />
+    <ClCompile Include="src\Game\Entity\Entity.cpp" />
+    <ClCompile Include="src\Game\Map\GameMap.cpp" />
+    <ClCompile Include="src\Game\Tile\TileSpriteLoader.cpp" />
+    <ClCompile Include="src\Game\Entity\BoxEntity.cpp" />
+    <ClCompile Include="src\Game\Entity\RockEntity.cpp" />
+    <ClCompile Include="src\Game\Entity\KeyEntity.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h">
@@ -137,6 +145,20 @@
     <ClInclude Include="src\TextConstants.h">
       <Filter>TrainingFramework\src</Filter>
     </ClInclude>
+    <ClInclude Include="src\Game\GameWorld.h" />
+    <ClInclude Include="src\Game\Entity\Entity.h" />
+    <ClInclude Include="src\Game\Entity\PlayerEntity.h" />
+    <ClInclude Include="src\Game\Map\GameMap.h" />
+    <ClInclude Include="src\Game\Common\Vector2Int.h" />
+    <ClInclude Include="src\Game\GameWorldConfig.h" />
+    <ClInclude Include="src\Game\GridSlot.h" />
+    <ClInclude Include="src\Game\Tile\TileType.h" />
+    <ClInclude Include="src\Game\Tile\TileSpriteLoader.h" />
+    <ClInclude Include="src\Game\Entity\BoxEntity.h" />
+    <ClInclude Include="src\Game\Entity\RockEntity.h" />
+    <ClInclude Include="src\Game\Entity\KeyEntity.h" />
+    <ClInclude Include="src\Utils\InputManager.h" />
+    <ClInclude Include="src\Utils\KeyCode.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

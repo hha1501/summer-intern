@@ -21,8 +21,8 @@
 class Globals
 {
 public:
-	static int Globals::screenWidth;
-	static int Globals::screenHeight;
+	static int screenWidth;
+	static int screenHeight;
 };
 
 // define value
@@ -93,7 +93,7 @@ public:
 #define KEY_DOWN			VK_DOWN
 #define KEY_MOVE_LEFT		'A'
 #define KEY_MOVE_RIGHT		'D'
-#define KEY_MOVE_FORWORD	'W'
-#define KEY_MOVE_BACKWORD	'S'
+#define KEY_MOVE_FORWARD	'W'
+#define KEY_MOVE_BACKWARD	'S'
 
 #endif

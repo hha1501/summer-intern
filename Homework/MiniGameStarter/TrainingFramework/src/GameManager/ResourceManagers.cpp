@@ -15,7 +15,7 @@ ResourceManagers::ResourceManagers()
 	m_ShaderPath = dataPath + "Shaders\\";
 	m_TexturePath = dataPath + "Textures\\";
 	m_ModelsPath = dataPath + "Model\\";
-	m_FontPath = dataPath + "fonts\\";
+	m_FontPath = dataPath + "Fonts\\";
 }
 
 ResourceManagers::~ResourceManagers()
@@ -118,7 +118,7 @@ std::shared_ptr<Shader> ResourceManagers::GetShader(const std::string& name)
 	return shaders;
 }
 
-std::shared_ptr<Texture> ResourceManagers::GetTexture(const std::string& name)
+std::shared_ptr<Texture> ResourceManagers::GetTexture(const std::string& name, bool isPixelTexture)
 {
 	auto it = m_MapTexture.find(name);
 	if (it != m_MapTexture.end())
@@ -127,7 +127,7 @@ std::shared_ptr<Texture> ResourceManagers::GetTexture(const std::string& name)
 	}
 	std::shared_ptr<Texture> texture = std::make_shared<Texture>();
 	std::string file = m_TexturePath + name;
-	texture->Init(file.c_str(), GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, GL_LINEAR);
+	texture->Init(file.c_str(), GL_CLAMP_TO_EDGE, GL_LINEAR_MIPMAP_LINEAR, isPixelTexture ? GL_NEAREST : GL_LINEAR);
 	m_MapTexture.insert(std::pair<std::string, std::shared_ptr<Texture>>(name, texture));
 	return texture;
 }

@@ -6,19 +6,19 @@
 #include "Application.h"
 
 Sprite2D::Sprite2D(GLint id, std::shared_ptr<Model> model, std::shared_ptr<Shader> shader, std::shared_ptr<Texture> texture)
-	: BaseObject(id, model, shader, texture), m_iWidth(100), m_iHeight(50), m_vboId(0)
+	: BaseObject(id, model, shader, texture), m_width(1.0f), m_height(1.0f), m_vboId(0)
 {
 	Init();
 }
 
 Sprite2D::Sprite2D(GLint id, std::shared_ptr<Model> model, std::shared_ptr<Shader> shader, Vector4 color)
-	: BaseObject(id, model, shader, color), m_iWidth(100), m_iHeight(50), m_vboId(0)
+	: BaseObject(id, model, shader, color), m_width(1.0f), m_height(1.0f), m_vboId(0)
 {
 	Init();
 }
 
 Sprite2D::Sprite2D(std::shared_ptr<Model> model, std::shared_ptr<Shader> shader, std::shared_ptr<Texture> texture)
-	: BaseObject(-1, model, shader, texture), m_iWidth(100), m_iHeight(50), m_vboId(0)
+	: BaseObject(-1, model, shader, texture), m_width(1.0f), m_height(1.0f), m_vboId(0)
 {
 	Init();
 }
@@ -43,7 +43,7 @@ void Sprite2D::Draw()
 	GLuint iTempShaderVaribleGLID = -1;
 	Matrix wvpMatrix;
 
-	wvpMatrix = m_worldMatrix * m_pCamera->GetLookAtCameraMatrix();
+	wvpMatrix = m_worldMatrix * m_pCamera->GetLookAtMatrix();
 
 	if (m_pTexture != nullptr)
 	{
@@ -113,10 +113,10 @@ void Sprite2D::Set2DPosition(Vector2 position)
 	CalculateWorldMatrix();
 }
 
-void Sprite2D::SetSize(GLint width, GLint height)
+void Sprite2D::SetSize(GLfloat width, GLfloat height)
 {
-	m_iWidth = width;
-	m_iHeight = height;
-	m_scale = Vector3((GLfloat)m_iWidth, (GLfloat)m_iHeight, 1.0f);
+	m_width = width;
+	m_height = height;
+	m_scale = Vector3(m_width, m_height, 1.0f);
 	CalculateWorldMatrix();
 }

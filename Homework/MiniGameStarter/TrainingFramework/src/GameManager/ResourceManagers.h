@@ -28,7 +28,7 @@ public:
 	void RemoveFont(const std::string& name);
 
 	std::shared_ptr<Shader> GetShader(const std::string& name);
-	std::shared_ptr<Texture> GetTexture(const std::string& name);
+	std::shared_ptr<Texture> GetTexture(const std::string& name, bool isPixelTexture = false);
 	std::shared_ptr<Model> GetModel(const std::string& name);
 	std::shared_ptr<Font> GetFont(const std::string& name);
 

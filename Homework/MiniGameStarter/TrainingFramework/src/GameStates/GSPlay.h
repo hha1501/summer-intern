@@ -1,6 +1,10 @@
 #pragma once
 #include "GameStateBase.h"
 
+#include "../Game/GameWorld.h"
+
+#include "../Utils/InputManager.h"
+
 class Sprite2D;
 class Sprite3D;
 class Text;
@@ -28,8 +32,9 @@ public:
 
 private:
 	std::shared_ptr<Sprite2D>	m_background;
-	std::shared_ptr<Text>		m_score;
 	std::list<std::shared_ptr<GameButton>>	m_listButton;
 
+	GameWorld m_gameWorld;
+	const InputManager* m_inputManager;
 };
 

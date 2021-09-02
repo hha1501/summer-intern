@@ -28,6 +28,8 @@ void Application::Update(GLfloat deltaTime)
 
 	if (GameStateMachine::GetInstance()->HasState())
 		GameStateMachine::GetInstance()->CurrentState()->Update(deltaTime);
+
+	m_inputManager.OnUpdate();
 }
 
 void Application::Render()
@@ -38,17 +40,18 @@ void Application::Render()
 		GameStateMachine::GetInstance()->CurrentState()->Draw();
 }
 
-void Application::HandleKeyEvent(unsigned char key, bool bIsPresseded)
+void Application::HandleKeyEvent(unsigned char key, bool bIsPressed)
 {
-	if (GameStateMachine::GetInstance()->HasState())
-		GameStateMachine::GetInstance()->CurrentState()->HandleKeyEvents(key, bIsPresseded);
+	m_inputManager.OnKeyEvent(key, bIsPressed);
 
+	if (GameStateMachine::GetInstance()->HasState())
+		GameStateMachine::GetInstance()->CurrentState()->HandleKeyEvents(key, bIsPressed);
 }
 
-void Application::HandleTouchEvent(GLint x, GLint y, bool bIsPresseded)
+void Application::HandleTouchEvent(GLint x, GLint y, bool bIsPressed)
 {
 	if (GameStateMachine::GetInstance()->HasState())
-		GameStateMachine::GetInstance()->CurrentState()->HandleTouchEvents(x, y, bIsPresseded);
+		GameStateMachine::GetInstance()->CurrentState()->HandleTouchEvents(x, y, bIsPressed);
 }
 
 void Application::HandleMouseMoveEvent(GLint x, GLint y)

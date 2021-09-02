@@ -3,8 +3,8 @@
 #include "Application.h"
 #include "utilities.h" 
 
-int Globals::screenWidth = 600;
-int Globals::screenHeight = 600;
+int Globals::screenWidth = 640;
+int Globals::screenHeight = 640;
 
 GLint Init(ESContext* esContext)
 {
@@ -23,14 +23,14 @@ void Update(ESContext* esContext, GLfloat deltaTime)
 	Application::GetInstance()->Update(deltaTime);
 }
 
-void OnKey(ESContext* esContext, unsigned char key, bool bbIsPresseded)
+void OnKey(ESContext* esContext, unsigned char key, bool bbIsPressed)
 {
-	Application::GetInstance()->HandleKeyEvent(key, bbIsPresseded);
+	Application::GetInstance()->HandleKeyEvent(key, bbIsPressed);
 }
 
-void OnMouseClick(ESContext* esContext, GLint x, GLint y, bool bbIsPresseded)
+void OnMouseClick(ESContext* esContext, GLint x, GLint y, bool bbIsPressed)
 {
-	Application::GetInstance()->HandleTouchEvent(x, y, bbIsPresseded);
+	Application::GetInstance()->HandleTouchEvent(x, y, bbIsPressed);
 }
 
 void OnMouseMove(ESContext* esContext, GLint x, GLint y)
