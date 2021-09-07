@@ -3,7 +3,7 @@
 #include "Camera.h"
 
 GameButton::GameButton(std::shared_ptr<Model> model, std::shared_ptr<Shader> shader, std::shared_ptr<Texture> texture)
-	: Sprite2D(-1, model, shader, texture), m_pBtClick(nullptr), m_isHolding(false)
+	: Sprite2D(-1, model, shader, texture), m_clickCallback{}, m_isHolding(false)
 {
 }
 
@@ -11,9 +11,9 @@ GameButton::~GameButton()
 {
 }
 
-void GameButton::SetOnClick(void(*pBtClickFun)())
+void GameButton::SetOnClick(std::function<void()> clickCallback)
 {
-	m_pBtClick = pBtClickFun;
+	m_clickCallback = clickCallback;
 }
 
 bool GameButton::HandleTouchEvents(GLint x, GLint y, bool bIsPressed)
@@ -32,7 +32,7 @@ bool GameButton::HandleTouchEvents(GLint x, GLint y, bool bIsPressed)
 		if (TestPointInBounds(x, y))
 		{
 			// Only perform click action when the same button was pressed down and released
-			m_pBtClick();
+			m_clickCallback();
 			isHandled = true;
 		}
 		m_isHolding = false;

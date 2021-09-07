@@ -13,8 +13,12 @@
 
 #include "../Game/Map/GameMap.h"
 
-GSPlay::GSPlay()
+constexpr float c_victoryWaitTime = 2.0f;
+
+GSPlay::GSPlay() : m_inVictoryScreen(false), m_victoryWaitTime{}
 {
+    m_inputManager = Application::GetInstance()->GetInputManager();
+    m_sessionManager = Application::GetInstance()->GetSessionManager();
 }
 
 
@@ -28,13 +32,8 @@ void CreateMap()
     GameMap gameMap(mapSize, mapSize);
 
     std::vector <GameMap::EntityEntry>& entities = gameMap.Entities();
-    entities.push_back(GameMap::EntityEntry{ 1, 1, (uint8_t)EntityType::Player });
-    entities.push_back(GameMap::EntityEntry{ 4, 6, (uint8_t)EntityType::Box });
-    entities.push_back(GameMap::EntityEntry{ 5, 6, (uint8_t)EntityType::Box });
-    entities.push_back(GameMap::EntityEntry{ 6, 6, (uint8_t)EntityType::Box });
-    entities.push_back(GameMap::EntityEntry{ 3, 1, (uint8_t)EntityType::Rock });
-    entities.push_back(GameMap::EntityEntry{ 4, 1, (uint8_t)EntityType::Rock });
-    entities.push_back(GameMap::EntityEntry{ 5, 1, (uint8_t)EntityType::Key });
+    entities.push_back(GameMap::EntityEntry{ 5, 1, (uint8_t)EntityType::Player });
+    entities.push_back(GameMap::EntityEntry{ 1, 4, (uint8_t)EntityType::Key });
 
     std::vector<uint8_t>& tiles = gameMap.Tiles();
     for (size_t i = 0; i < mapSize; i++)
@@ -47,20 +46,20 @@ void CreateMap()
 
     tiles[(mapSize - 1) + mapSize * 1] = (uint8_t)TileType::Exit;
 
-    tiles[3 + 10 * 5] = (uint8_t)TileType::Wall | ((uint8_t)1 << GameMap::c_tileDetailsMaskShift);
-    tiles[4 + 10 * 5] = (uint8_t)TileType::Wall | ((uint8_t)1 << GameMap::c_tileDetailsMaskShift);
-    tiles[5 + 10 * 5] = (uint8_t)TileType::Wall | ((uint8_t)1 << GameMap::c_tileDetailsMaskShift);
-    tiles[6 + 10 * 5] = (uint8_t)TileType::Wall | ((uint8_t)1 << GameMap::c_tileDetailsMaskShift);
-    tiles[2 + 10 * 6] = (uint8_t)TileType::Wall | ((uint8_t)1 << GameMap::c_tileDetailsMaskShift);
-    tiles[7 + 10 * 6] = (uint8_t)TileType::Wall | ((uint8_t)1 << GameMap::c_tileDetailsMaskShift);
+    tiles[1 + 10 * 1] = (uint8_t)TileType::Wall | ((uint8_t)1 << GameMap::c_tileDetailsMaskShift);
+    tiles[2 + 10 * 1] = (uint8_t)TileType::Wall | ((uint8_t)1 << GameMap::c_tileDetailsMaskShift);
+    tiles[3 + 10 * 1] = (uint8_t)TileType::Wall | ((uint8_t)1 << GameMap::c_tileDetailsMaskShift);
+    tiles[1 + 10 * 2] = (uint8_t)TileType::Wall | ((uint8_t)1 << GameMap::c_tileDetailsMaskShift);
+    tiles[2 + 10 * 2] = (uint8_t)TileType::Wall | ((uint8_t)1 << GameMap::c_tileDetailsMaskShift);
+    tiles[1 + 10 * 3] = (uint8_t)TileType::Wall | ((uint8_t)1 << GameMap::c_tileDetailsMaskShift);
 
-    GameMap::SaveToFile(gameMap, 1);
+    GameMap::SaveToFile(gameMap, 2);
 }
 
 void GSPlay::Init()
 {
     auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D.nfg");
-    auto texture = ResourceManagers::GetInstance()->GetTexture("background_white.tga");
+    auto texture = ResourceManagers::GetInstance()->GetTexture("game_background.tga");
 
     // background
     auto shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
@@ -70,19 +69,28 @@ void GSPlay::Init()
 
     // button close
     texture = ResourceManagers::GetInstance()->GetTexture("button_close.tga");
-    std::shared_ptr<GameButton>  button = std::make_shared<GameButton>(model, shader, texture);
-    button->Set2DPosition(Globals::screenWidth - 50, 50);
-    button->SetSize(50, 50);
-    button->SetOnClick([]()
+    std::shared_ptr<GameButton> closeButton = std::make_shared<GameButton>(model, shader, texture);
+    closeButton->Set2DPosition(Globals::screenWidth - 30, 30);
+    closeButton->SetSize(50, 50);
+    closeButton->SetOnClick([]()
     {
         GameStateMachine::GetInstance()->PopState();
     });
-    m_listButton.push_back(button);
+    m_listButton.push_back(closeButton);
 
-    m_gameWorld.Init();
+    // button restart
+    texture = ResourceManagers::GetInstance()->GetTexture("button_restart.tga");
+    std::shared_ptr<GameButton> restartButton = std::make_shared<GameButton>(model, shader, texture);
+    restartButton->Set2DPosition(30, 30);
+    restartButton->SetSize(50, 50);
+    restartButton->SetOnClick([this]()
+    {
+        RestartGameWorld();
+    });
+    m_listButton.push_back(restartButton);
+
+    RestartGameWorld();
     //CreateMap();
-
-    m_inputManager = Application::GetInstance()->GetInputManager();
 }
 
 void GSPlay::Exit()
@@ -156,6 +164,25 @@ void GSPlay::Update(float deltaTime)
     }
 
     m_gameWorld.Update(deltaTime);
+
+    if (!m_inVictoryScreen)
+    {
+        if (m_gameWorld.IsVictory())
+        {
+            OnVictory();
+        }
+    }
+    else
+    {
+        m_victoryWaitTime += deltaTime;
+        if (m_victoryWaitTime >= c_victoryWaitTime)
+        {
+            m_inVictoryScreen = false;
+            GameStateMachine::GetInstance()->PopState();
+        }
+    }
+
+    // TODO: Handle game over
 }
 
 void GSPlay::Draw()
@@ -168,4 +195,34 @@ void GSPlay::Draw()
     {
         it->Draw();
     }
+
+    if (m_inVictoryScreen)
+    {
+        m_victoryPanel->Draw();
+    }
+}
+
+void GSPlay::RestartGameWorld()
+{
+    if (m_inVictoryScreen)
+    {
+        return;
+    }
+
+    m_gameWorld = GameWorld();
+    m_gameWorld.Init(m_sessionManager->GetSelectedLevel());
+}
+
+void GSPlay::OnVictory()
+{
+    auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D.nfg");
+    auto shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
+
+    // victory panel
+    auto texture = ResourceManagers::GetInstance()->GetTexture("panel_victory.tga");
+    m_victoryPanel = std::make_unique<Sprite2D>(model, shader, texture);
+    m_victoryPanel->Set2DPosition(Vector2((float)Globals::screenWidth / 2, (float)Globals::screenHeight / 2));
+    m_victoryPanel->SetSize(450.0f, 180.0f);
+
+    m_inVictoryScreen = true;
 }

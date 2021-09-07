@@ -4,6 +4,7 @@
 #include "Camera.h"
 
 #include "Utils/InputManager.h"
+#include "Utils/SessionManager.h"
 
 class Application : public CSingleton<Application>
 {
@@ -27,8 +28,14 @@ public:
 		return &m_inputManager;
 	}
 
+	SessionManager* GetSessionManager()
+	{
+		return &m_sessionManager;
+	}
+
 private:
 	std::shared_ptr<Camera> m_camera;
 	InputManager m_inputManager;
+	SessionManager m_sessionManager;
 };
 

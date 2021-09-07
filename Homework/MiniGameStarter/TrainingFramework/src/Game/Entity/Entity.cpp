@@ -4,6 +4,9 @@
 
 #include "ResourceManagers.h"
 
+#include "Sprite2D.h"
+#include "AtlasSprite2D.h"
+
 using namespace GameWorldConfig;
 
 void Entity::SetPosition(Vector2Int gridPosition)
@@ -23,14 +26,28 @@ void Entity::SetCamera(std::shared_ptr<Camera> camera)
     m_sprite->SetCamera(camera);
 }
 
-void Entity::LoadSprite(const char* texture, bool isAnimated)
+void Entity::LoadSprite(const char* texture)
 {
     auto resourceManager = ResourceManagers::GetInstance();
 
     std::shared_ptr<Model> spriteModel = resourceManager->GetModel("Sprite2D-cartesian.nfg");
-    std::shared_ptr<Shader> spriteShader = isAnimated ? resourceManager->GetShader("AnimationTextureShader") : resourceManager->GetShader("TextureShader");
     std::shared_ptr<Texture> tileTexture = resourceManager->GetTexture(texture, true);
 
+    std::shared_ptr<Shader> spriteShader = resourceManager->GetShader("TextureShader");
     m_sprite = std::make_unique<Sprite2D>(spriteModel, spriteShader, tileTexture);
+
+    m_sprite->SetSize(c_tileSize, c_tileSize);
+}
+
+void Entity::LoadAtlasSprite(const char* texture, Vector2Int atlasSize)
+{
+    auto resourceManager = ResourceManagers::GetInstance();
+
+    std::shared_ptr<Model> spriteModel = resourceManager->GetModel("Sprite2D-cartesian.nfg");
+    std::shared_ptr<Texture> tileTexture = resourceManager->GetTexture(texture, true);
+
+    std::shared_ptr<Shader> spriteShader = resourceManager->GetShader("AtlasTextureShader");
+    m_sprite = std::make_unique<AtlasSprite2D>(spriteModel, spriteShader, tileTexture, atlasSize);
+
     m_sprite->SetSize(c_tileSize, c_tileSize);
 }

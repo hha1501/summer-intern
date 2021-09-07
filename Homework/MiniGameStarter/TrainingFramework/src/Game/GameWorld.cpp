@@ -16,23 +16,23 @@
 
 using namespace GameWorldConfig;
 
-GameWorld::GameWorld() : m_worldCamera{}, m_tiles{}, m_entities{}, m_player{}, m_keyEntity{},
-m_playerHasKey(false), m_gameOver(false), m_playerExited(false), m_needToUpdate(false),
-m_currentGravityDirection{}, m_updateTimer{},
-m_mapWidth{}, m_mapHeight{}, m_mapLookup{}, m_entityUpdateQueue{}, m_entityRemovePendingList{}
+GameWorld::GameWorld() : m_worldCamera{}, m_tiles{}, m_entities{}, m_keys{}, m_doorTile{}, m_player{},
+m_keysToCollectCount{}, m_gameOver(false), m_playerExited(false), 
+m_currentGravityDirection{}, m_needToUpdate(false), m_updateTimer{},
+m_mapWidth{}, m_mapHeight{}, m_mapLookup{}, m_keyLookup{}, m_entityUpdateQueue{}, m_entitiesListChanged(false), m_keysListChanged(false)
 {
 }
 
-void GameWorld::Init()
+void GameWorld::Init(int level)
 {
     m_worldCamera = std::make_shared<Camera>(0, 0.0f, c_mapWidth, c_mapHeight, 0.0f, -1.0f, 1.0f, 0.0f);
 
-    LoadMap(1);
+    LoadMap(level);
 }
 
 void GameWorld::SetGravity(GravityDirection gravityDirection)
 {
-    if (m_needToUpdate)
+    if (m_needToUpdate || m_gameOver || m_playerExited)
     {
         return;
     }
@@ -76,7 +76,7 @@ void GameWorld::SetGravity(GravityDirection gravityDirection)
 
 void GameWorld::MovePlayer(InputDirection direction)
 {
-    if (m_needToUpdate)
+    if (m_needToUpdate || m_gameOver || m_playerExited)
     {
         return;
     }
@@ -101,6 +101,8 @@ void GameWorld::Update(float deltaTime)
 
         m_updateTimer -= c_frameTime;
     }
+
+    m_player->Update(deltaTime);
 }
 
 void GameWorld::Draw()
@@ -117,6 +119,24 @@ void GameWorld::Draw()
             entity->Draw();
         }
     }
+
+    for (auto& key : m_keys)
+    {
+        if (key->IsValid())
+        {
+            key->Draw();
+        }
+    }
+}
+
+bool GameWorld::IsGameOver() const
+{
+    return m_gameOver;
+}
+
+bool GameWorld::IsVictory() const
+{
+    return m_playerExited;
 }
 
 void GameWorld::LoadMap(int id)
@@ -142,13 +162,13 @@ void GameWorld::LoadMap(int id)
 
 void GameWorld::AddEntity(EntityType entityType, Vector2Int position)
 {
-    Entity* newEntity = nullptr;
+    Entity* movableEntity = nullptr;
 
     switch (entityType)
     {
     case EntityType::Player: {
         std::unique_ptr<PlayerEntity> playerEntity = std::make_unique<PlayerEntity>();
-        newEntity = playerEntity.get();
+        movableEntity = playerEntity.get();
         m_player = playerEntity.get();
 
         playerEntity->SetPosition(position);
@@ -159,7 +179,7 @@ void GameWorld::AddEntity(EntityType entityType, Vector2Int position)
     }
     case EntityType::Rock: {
         std::unique_ptr<RockEntity> rockEntity = std::make_unique<RockEntity>();
-        newEntity = rockEntity.get();
+        movableEntity = rockEntity.get();
 
         rockEntity->SetPosition(position);
         rockEntity->SetCamera(m_worldCamera);
@@ -169,7 +189,7 @@ void GameWorld::AddEntity(EntityType entityType, Vector2Int position)
     }
     case EntityType::Box: {
         std::unique_ptr<BoxEntity> boxEntity = std::make_unique<BoxEntity>();
-        newEntity = boxEntity.get();
+        movableEntity = boxEntity.get();
 
         boxEntity->SetPosition(position);
         boxEntity->SetCamera(m_worldCamera);
@@ -179,55 +199,42 @@ void GameWorld::AddEntity(EntityType entityType, Vector2Int position)
     }
     case EntityType::Key: {
         std::unique_ptr<KeyEntity> keyEntity = std::make_unique<KeyEntity>();
-        newEntity = keyEntity.get();
-        m_keyEntity = keyEntity.get();
 
         keyEntity->SetPosition(position);
         keyEntity->SetCamera(m_worldCamera);
 
-        m_entities.push_back(std::move(keyEntity));
+        bool insertResult = m_keyLookup.insert({ position, keyEntity.get() }).second;
+        assert(insertResult && "Invalid map construction");
+
+        m_keys.push_back(std::move(keyEntity));
+
+        m_keysToCollectCount++;
         break;
     }
     default:
         break;
     }
 
-    GridSlot& gridSlot = m_mapLookup[GridPos2Index(position)];
-    GridSlot::ContentType slotContentType = gridSlot.Type();
-
-    // TODO: Convert this into bit mask checking
-    if (slotContentType == GridSlot::ContentType::Empty)
+    if (entityType != EntityType::Key)
     {
-        gridSlot = GridSlot(newEntity);
-    }
-    else if (slotContentType == GridSlot::ContentType::Entity)
-    {
-        EntityType slotEntityType = gridSlot.AsEntity()->GetType();
+        GridSlot& gridSlot = m_mapLookup[GridPos2Index(position)];
+        GridSlot::ContentType slotContentType = gridSlot.Type();
 
-        if (entityType == EntityType::Key && (slotEntityType == EntityType::Box || slotEntityType == EntityType::Rock))
+        if (slotContentType == GridSlot::ContentType::Empty)
         {
-            // Case 1: Key added to grid slot
-            gridSlot = GridSlot(gridSlot.AsEntity(), true);
-        }
-        else if (slotEntityType == EntityType::Key && (entityType == EntityType::Box || entityType == EntityType::Rock))
-        {
-            // Case 2: Entity added to grid slot that already contains a key
-            gridSlot = GridSlot(newEntity, true);
+            gridSlot = GridSlot(movableEntity);
         }
         else
         {
-            assert(false && "Invalid GridSlot fusion");
+            assert(false && "Invalid map construction");
         }
-    }
-    else
-    {
-        assert(false && "Invalid GridSlot fusion");
     }
 }
 
 void GameWorld::CreateTiles(const std::vector<uint8_t>& tiles)
 {
-    TileSpriteLoader tileSpriteLoader;
+    TileSpriteLoader tileSpriteLoader = TileSpriteLoader();
+    TileSpriteLoader atlasSpriteLoader = TileSpriteLoader(true);
 
     for (size_t y = 0; y < m_mapHeight; y++)
     {
@@ -239,7 +246,15 @@ void GameWorld::CreateTiles(const std::vector<uint8_t>& tiles)
 
             if (tileType != TileType::Empty)
             {
-                std::unique_ptr<Sprite2D> tileSprite = tileSpriteLoader.LoadSprite(tileType, tileDetails, Vector2Int(x, y));
+                std::unique_ptr<Sprite2D> tileSprite;
+                if (tileType == TileType::Exit)
+                {
+                    tileSprite = atlasSpriteLoader.LoadSprite(tileType, tileDetails, Vector2Int(x, y));
+                }
+                else
+                {
+                    tileSprite = tileSpriteLoader.LoadSprite(tileType, tileDetails, Vector2Int(x, y));
+                }
                 tileSprite->SetCamera(m_worldCamera);
 
                 GridSlot& gridSlot = m_mapLookup[GridPos2Index(Vector2Int(x, y))];
@@ -249,13 +264,20 @@ void GameWorld::CreateTiles(const std::vector<uint8_t>& tiles)
                 }
                 else
                 {
-                    assert(false && "Invalid GridSlot fusion");
+                    assert(false && "Invalid map construction");
+                }
+
+                if (tileType == TileType::Exit)
+                {
+                    m_doorTile = static_cast<AtlasSprite2D*>(tileSprite.get());
                 }
 
                 m_tiles.push_back(std::move(tileSprite));
             }
         }
     }
+
+    assert(m_doorTile != nullptr && "Map contains no door");
 }
 
 
@@ -270,42 +292,6 @@ bool GameWorld::TryMoveEntityUnderGravity(Entity* entity, Vector2Int newPosition
     GridSlot& currentGridSlot = m_mapLookup[GridPos2Index(entity->GetGridPosition())];
     GridSlot& targetGridSlot = m_mapLookup[GridPos2Index(newPosition)];
 
-    if (targetGridSlot.Type() == GridSlot::ContentType::Tile)
-    {
-        return false;
-    }
-
-    // Special case: moving to an empty slot
-    if (targetGridSlot.Type() == GridSlot::ContentType::Empty)
-    {
-        // Update grid slots, decompose if needed
-        if (currentGridSlot.Type() == GridSlot::ContentType::EntityAndKey)
-        {
-            if (entity->GetType() == EntityType::Key)
-            {
-                // Remove key from fused grid slot
-                currentGridSlot = GridSlot(currentGridSlot.AsEntity());
-            }
-            else
-            {
-                // Remove entity from fused grid slot
-                currentGridSlot = GridSlot(m_keyEntity);
-            }
-        }
-        else
-        {
-            currentGridSlot = GridSlot();
-        }
-
-        targetGridSlot = GridSlot(entity);
-
-        // Update position
-        entity->SetPosition(newPosition);
-
-        return true;
-    }
-
-    // Moving to a slot that contains entities
     switch (entity->GetType())
     {
     case EntityType::Player:
@@ -317,10 +303,8 @@ bool GameWorld::TryMoveEntityUnderGravity(Entity* entity, Vector2Int newPosition
     case EntityType::Rock:
         return TryMoveRockEntityUnderGravity(entity, newPosition, currentGridSlot, targetGridSlot);
         break;
-    case EntityType::Key:
-        return TryMoveKeyEntityUnderGravity(entity, newPosition, currentGridSlot, targetGridSlot);
-        break;
     default:
+        assert(false && "This entity is not supposed to move");
         break;
     }
 
@@ -329,14 +313,104 @@ bool GameWorld::TryMoveEntityUnderGravity(Entity* entity, Vector2Int newPosition
 
 bool GameWorld::TryMovePlayerEntityUnderGravity(Entity* entity, Vector2Int newPosition, GridSlot& currentGridSlot, GridSlot& targetGridSlot)
 {
-    if (targetGridSlot.AsEntity()->GetType() == EntityType::Key)
+    if (targetGridSlot.Type() == GridSlot::ContentType::Empty)
     {
-        // Move to a key
-        // Remove key
-        MarkEntityAsRemoved(m_keyEntity);
-        m_keyEntity = nullptr;
+        // Check for key
+        auto keyIterator = m_keyLookup.find(newPosition);
+        if (keyIterator != m_keyLookup.end())
+        {
+            // Move to a key
+            // Remove key
+            MarkEntityAsRemoved(keyIterator->second);
 
-        m_playerHasKey = true;
+            // Update lookup
+            m_keyLookup.erase(keyIterator);
+
+            OnPlayerPickupKey();
+        }
+
+        // Update grid slots
+        currentGridSlot = GridSlot();
+        targetGridSlot = GridSlot(entity);
+
+        // Update position
+        entity->SetPosition(newPosition);
+
+        // Update animation
+        m_player->SetFalling(true);
+
+        return true;
+    }
+
+    // Blocked by tile or another entity
+    // Update animation
+    m_player->SetFalling(false);
+
+    return false;
+}
+
+bool GameWorld::TryMoveBoxEntityUnderGravity(Entity* entity, Vector2Int newPosition, GridSlot& currentGridSlot, GridSlot& targetGridSlot)
+{
+    if (targetGridSlot.Type() == GridSlot::ContentType::Empty)
+    {
+        // Update grid slot
+        currentGridSlot = GridSlot();
+        targetGridSlot = GridSlot(entity);
+
+        // Update position
+        entity->SetPosition(newPosition);
+
+        return true;
+    }
+
+    // Blocked by tile or another entity
+    return false;
+}
+
+bool GameWorld::TryMoveRockEntityUnderGravity(Entity* entity, Vector2Int newPosition, GridSlot& currentGridSlot, GridSlot& targetGridSlot)
+{
+    if (targetGridSlot.Type() == GridSlot::ContentType::Tile)
+    {
+        return false;
+    }
+
+    if (targetGridSlot.Type() == GridSlot::ContentType::Empty)
+    {
+        // Update grid slot
+        currentGridSlot = GridSlot();
+        targetGridSlot = GridSlot(entity);
+
+        // Update position
+        entity->SetPosition(newPosition);
+
+        return true;
+    }
+
+    EntityType slotEntityType = targetGridSlot.AsEntity()->GetType();
+    if (slotEntityType == EntityType::Box)
+    {
+        // Move to a box
+        // Destroy box
+        MarkEntityAsRemoved(targetGridSlot.AsEntity());
+
+        // Update grid slots
+        currentGridSlot = GridSlot();
+        targetGridSlot = GridSlot(entity);
+
+        // Update position
+        entity->SetPosition(newPosition);
+
+        return true;
+    }
+
+    if (slotEntityType == EntityType::Player)
+    {
+        // Move to player
+        // Destroy player
+        MarkEntityAsRemoved(m_player);
+        m_player = nullptr;
+
+        m_gameOver = true;
 
         // Update grid slots
         currentGridSlot = GridSlot();
@@ -352,147 +426,11 @@ bool GameWorld::TryMovePlayerEntityUnderGravity(Entity* entity, Vector2Int newPo
     return false;
 }
 
-bool GameWorld::TryMoveBoxEntityUnderGravity(Entity* entity, Vector2Int newPosition, GridSlot& currentGridSlot, GridSlot& targetGridSlot)
-{
-    if (targetGridSlot.AsEntity()->GetType() == EntityType::Key)
-    {
-        // Move to a key
-        // Fuse with key
-        currentGridSlot = GridSlot();
-        targetGridSlot = GridSlot(entity, true);
-
-        // Update position
-        entity->SetPosition(newPosition);
-
-        return true;
-    }
-
-    // Blocked
-    return false;
-}
-
-bool GameWorld::TryMoveRockEntityUnderGravity(Entity* entity, Vector2Int newPosition, GridSlot& currentGridSlot, GridSlot& targetGridSlot)
-{
-    EntityType slotEntityType = targetGridSlot.AsEntity()->GetType();
-    if (slotEntityType == EntityType::Key)
-    {
-        // Move to a key
-        // Fuse with key
-        currentGridSlot = GridSlot();
-        targetGridSlot = GridSlot(entity, true);
-
-        // Update position
-        entity->SetPosition(newPosition);
-
-        return true;
-    }
-    else if (slotEntityType == EntityType::Box)
-    {
-        // Move to a box
-        // Destroy box
-        MarkEntityAsRemoved(targetGridSlot.AsEntity());
-
-        // Update grid slots, decompose and fuse if needed
-        if (currentGridSlot.Type() == GridSlot::ContentType::EntityAndKey)
-        {
-            // Remove entity from fused grid slot
-            currentGridSlot = GridSlot(m_keyEntity);
-            targetGridSlot = GridSlot(entity);
-        }
-        else
-        {
-            currentGridSlot = GridSlot();
-            if (targetGridSlot.Type() == GridSlot::ContentType::EntityAndKey)
-            {
-                targetGridSlot = GridSlot(entity, true);
-            }
-            else
-            {
-                targetGridSlot = GridSlot(entity);
-            }
-        }
-
-        // Update position
-        entity->SetPosition(newPosition);
-
-        return true;
-    }
-    else if (slotEntityType == EntityType::Player)
-    {
-        // Move to player
-        // Destroy player
-        MarkEntityAsRemoved(m_player);
-        m_player = nullptr;
-
-        m_gameOver = true;
-
-        // Update grid slots, decompose if needed
-        if (currentGridSlot.Type() == GridSlot::ContentType::EntityAndKey)
-        {
-            // Remove entity from fused grid slot
-            currentGridSlot = GridSlot(m_keyEntity);
-            targetGridSlot = GridSlot(entity);
-        }
-        else
-        {
-            currentGridSlot = GridSlot();
-            targetGridSlot = GridSlot(entity);
-        }
-
-        // Update position
-        entity->SetPosition(newPosition);
-
-        return true;
-    }
-
-    // Blocked
-    return false;
-}
-
-bool GameWorld::TryMoveKeyEntityUnderGravity(Entity* entity, Vector2Int newPosition, GridSlot& currentGridSlot, GridSlot& targetGridSlot)
-{
-    // Update current grid slots
-    if (currentGridSlot.Type() == GridSlot::ContentType::EntityAndKey)
-    {
-        // Remove key from fused slot
-        currentGridSlot = GridSlot(currentGridSlot.AsEntity());
-    }
-    else
-    {
-        currentGridSlot = GridSlot();
-    }
-
-
-    if (targetGridSlot.AsEntity()->GetType() == EntityType::Player)
-    {
-        // Move to player
-        // Remove key
-        MarkEntityAsRemoved(m_keyEntity);
-        m_keyEntity = nullptr;
-
-        m_playerHasKey = true;
-
-        // Target slot stays unchanged
-
-        // Update position
-        entity->SetPosition(newPosition);
-
-        return true;
-    }
-    else
-    {
-        // Fuse with target slot
-        targetGridSlot = GridSlot(targetGridSlot.AsEntity(), true);
-    }
-
-    // Update position
-    entity->SetPosition(newPosition);
-
-    return true;
-}
-
 bool GameWorld::TryMovePlayerUnderInput(InputDirection inputDirection)
 {
+    // Update animation
+    m_player->SetFacingDirection(inputDirection == InputDirection::Right);
+
     constexpr std::array<Vector2Int, 4> gravityIndexToLeftVector
     {
         Vector2Int::Left(),
@@ -518,10 +456,14 @@ bool GameWorld::TryMovePlayerUnderInput(InputDirection inputDirection)
 
     if (targetGridSlot.Type() == GridSlot::ContentType::Tile)
     {
-        if (targetGridSlot.AsTile() == TileType::Exit && m_playerHasKey && m_currentGravityDirection == GravityDirection::Down)
+        // Check moving to the door
+        if (targetGridSlot.AsTile() == TileType::Exit && m_keysToCollectCount == 0 && m_currentGravityDirection == GravityDirection::Down)
         {
             currentGridSlot = GridSlot();
             m_playerExited = true;
+
+            // Update position
+            entity->SetPosition(newPosition);
 
             return true;
         }
@@ -531,9 +473,23 @@ bool GameWorld::TryMovePlayerUnderInput(InputDirection inputDirection)
 
     while (true)
     {
-        // Special case: moving to an empty slot
         if (targetGridSlot.Type() == GridSlot::ContentType::Empty)
         {
+            // Check for key
+            auto keyIterator = m_keyLookup.find(newPosition);
+            if (keyIterator != m_keyLookup.end())
+            {
+                // Move to a key
+                // Remove key
+                MarkEntityAsRemoved(keyIterator->second);
+
+                // Update lookup
+                m_keyLookup.erase(keyIterator);
+
+                OnPlayerPickupKey();
+            }
+
+            // Update grid slots
             currentGridSlot = GridSlot();
             targetGridSlot = GridSlot(entity);
 
@@ -551,26 +507,7 @@ bool GameWorld::TryMovePlayerUnderInput(InputDirection inputDirection)
             return false;
         }
 
-        if (targetSlotEntityType == EntityType::Key)
-        {
-            // Move to a key
-            // Remove key
-            MarkEntityAsRemoved(m_keyEntity);
-            m_keyEntity = nullptr;
-
-            m_playerHasKey = true;
-
-            // Update grid slots
-            currentGridSlot = GridSlot();
-            targetGridSlot = GridSlot(entity);
-
-            // Update position
-            entity->SetPosition(newPosition);
-
-            return true;
-        }
-
-        // Moving to a slot that contains a box
+        // Move to a box
         if (targetSlotEntityType == EntityType::Box)
         {
             // Try to move the blocking box out of the way
@@ -607,20 +544,10 @@ bool GameWorld::TryMoveBoxEntityUnderInput(Entity* entity, Vector2Int direction)
 
     while (true)
     {
-        // Special case: moving to an empty slot
         if (targetGridSlot.Type() == GridSlot::ContentType::Empty)
         {
-            // Update grid slots, decompose if needed
-            if (currentGridSlot.Type() == GridSlot::ContentType::EntityAndKey)
-            {
-                // Remove entity from fused grid slot
-                currentGridSlot = GridSlot(m_keyEntity);
-            }
-            else
-            {
-                currentGridSlot = GridSlot();
-            }
-
+            // Update grid slots
+            currentGridSlot = GridSlot();
             targetGridSlot = GridSlot(entity);
 
             // Update position
@@ -635,19 +562,6 @@ bool GameWorld::TryMoveBoxEntityUnderInput(Entity* entity, Vector2Int direction)
         if (targetSlotEntityType == EntityType::Rock)
         {
             return false;
-        }
-
-        // Move to a key
-        if (targetSlotEntityType == EntityType::Key)
-        {
-            // Fuse with key
-            currentGridSlot = GridSlot();
-            targetGridSlot = GridSlot(entity, true);
-
-            // Update position
-            entity->SetPosition(newPosition);
-
-            return true;
         }
 
         // Moving to a slot that contains another box
@@ -665,6 +579,15 @@ bool GameWorld::TryMoveBoxEntityUnderInput(Entity* entity, Vector2Int direction)
 
     // Blocked
     return false;
+}
+
+void GameWorld::OnPlayerPickupKey()
+{
+    m_keysToCollectCount--;
+    if (m_keysToCollectCount == 0)
+    {
+        m_doorTile->SetAtlasCoord(Vector2Int(1, 0));
+    }
 }
 
 void GameWorld::MarkWorldAsChanged()
@@ -745,28 +668,38 @@ bool GameWorld::ApplyGravity()
 void GameWorld::MarkEntityAsRemoved(Entity* entity)
 {
     entity->Invalidate();
-
-    m_entityRemovePendingList.push_back(entity);
+    
+    if (entity->GetType() == EntityType::Key)
+    {
+        m_keysListChanged = true;
+    }
+    else
+    {
+        m_entitiesListChanged = true;
+    }
 }
 
 void GameWorld::ProcessEntityRemovePendingList()
 {
-    if (m_entityRemovePendingList.empty())
+    if (m_entitiesListChanged)
     {
-        return;
-    }
-
-    for (auto entityTobeRemoved : m_entityRemovePendingList)
-    {
-        auto iterator = std::find_if(m_entities.begin(), m_entities.end(), [entityTobeRemoved](const std::unique_ptr<Entity>& entity)
+        m_entities.erase(std::remove_if(m_entities.begin(), m_entities.end(), [](const std::unique_ptr<Entity>& entity)
         {
-            return entity.get() == entityTobeRemoved;
-        });
+            return !entity->IsValid();
+        }), m_entities.end());
 
-        m_entities.erase(iterator);
+        m_entitiesListChanged = false;
     }
 
-    m_entityRemovePendingList.clear();
+    if (m_keysListChanged)
+    {
+        m_keys.erase(std::remove_if(m_keys.begin(), m_keys.end(), [](const std::unique_ptr<Entity>& keyEntity)
+        {
+            return !keyEntity->IsValid();
+        }), m_keys.end());
+
+        m_keysListChanged = false;
+    }
 }
 
 size_t GameWorld::GridPos2Index(Vector2Int position) const

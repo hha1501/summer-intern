@@ -14,6 +14,9 @@ public:
     {
     }
 
+    InputManager(const InputManager&) = delete;
+    InputManager& operator=(const InputManager&) = delete;
+
     void OnKeyEvent(unsigned char key, bool pressed)
     {
         constexpr uint32_t one = (uint32_t)1;

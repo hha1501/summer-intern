@@ -12,8 +12,7 @@ public:
 	{
 		Empty,
 		Tile,
-		Entity,
-		EntityAndKey
+		Entity
 	};
 
 public:
@@ -24,9 +23,8 @@ public:
 	{
 		m_container.tileType = tileType;
 	}
-	explicit GridSlot(Entity* entity, bool containsKey = false)
+	explicit GridSlot(Entity* entity) : m_contentType(ContentType::Entity)
 	{
-		m_contentType = containsKey ? ContentType::EntityAndKey : ContentType::Entity;
 		m_container.entity = entity;
 	}
 

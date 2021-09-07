@@ -31,7 +31,7 @@ void GSMenu::Init()
     buttonStart->SetSize(200, 70);
     buttonStart->SetOnClick([]()
     {
-        GameStateMachine::GetInstance()->ChangeState(StateType::STATE_PLAY);
+        GameStateMachine::GetInstance()->ChangeState(StateType::STATE_LEVEL_SELECT);
     });
     m_listButton.push_back(buttonStart);
 

@@ -52,7 +52,8 @@ protected:
     {
     }
 
-    void LoadSprite(const char* texture, bool isAnimated = false);
+    void LoadSprite(const char* texture);
+    void LoadAtlasSprite(const char* texture, Vector2Int atlasSize);
 
 protected:
     std::unique_ptr<Sprite2D> m_sprite;

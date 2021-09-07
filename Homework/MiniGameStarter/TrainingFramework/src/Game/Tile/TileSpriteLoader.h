@@ -10,7 +10,7 @@
 class TileSpriteLoader
 {
 public:
-    TileSpriteLoader(bool isAnimated = false);
+    TileSpriteLoader(bool isAtlas = false);
 
     std::unique_ptr<Sprite2D> LoadSprite(TileType tileType, uint8_t tileDetails, Vector2Int position);
 

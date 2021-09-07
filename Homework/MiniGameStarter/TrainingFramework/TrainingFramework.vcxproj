@@ -305,6 +305,7 @@
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\GameManager\ResourceManagers.cpp" />
+    <ClCompile Include="src\GameObject\AtlasSprite2D.cpp" />
     <ClCompile Include="src\GameObject\Font.cpp" />
     <ClCompile Include="src\GameObject\GameButton.cpp" />
     <ClCompile Include="src\GameObject\Sprite2D.cpp" />
@@ -318,6 +319,7 @@
     <ClCompile Include="src\GameStates\GameStateMachine.cpp" />
     <ClCompile Include="src\GameStates\GSIntro.cpp" />
     <ClCompile Include="src\GameStates\GSCredit.cpp" />
+    <ClCompile Include="src\GameStates\GSLevelSelect.cpp" />
     <ClCompile Include="src\GameStates\GSMenu.cpp" />
     <ClCompile Include="src\GameStates\GSPlay.cpp" />
     <ClCompile Include="src\Game\Entity\BoxEntity.cpp" />
@@ -335,6 +337,7 @@
     <ClInclude Include="src\GameConfig.h" />
     <ClInclude Include="src\GameManager\ResourceManagers.h" />
     <ClInclude Include="src\GameManager\Singleton.h" />
+    <ClInclude Include="src\GameObject\AtlasSprite2D.h" />
     <ClInclude Include="src\GameObject\BaseObject.h" />
     <ClInclude Include="src\GameObject\Font.h" />
     <ClInclude Include="src\GameObject\GameButton.h" />
@@ -349,9 +352,10 @@
     <ClInclude Include="src\GameStates\GameStateMachine.h" />
     <ClInclude Include="src\GameStates\GSIntro.h" />
     <ClInclude Include="src\GameStates\GSCredit.h" />
+    <ClInclude Include="src\GameStates\GSLevelSelect.h" />
     <ClInclude Include="src\GameStates\GSMenu.h" />
     <ClInclude Include="src\GameStates\GSPlay.h" />
-    <ClInclude Include="src\Game\Common\Vector2Int.h" />
+    <ClInclude Include="src\Common\Vector2Int.h" />
     <ClInclude Include="src\Game\Entity\BoxEntity.h" />
     <ClInclude Include="src\Game\Entity\Entity.h" />
     <ClInclude Include="src\Game\Entity\KeyEntity.h" />
@@ -366,6 +370,7 @@
     <ClInclude Include="src\TextConstants.h" />
     <ClInclude Include="src\Utils\InputManager.h" />
     <ClInclude Include="src\Utils\KeyCode.h" />
+    <ClInclude Include="src\Utils\SessionManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

@@ -2,5 +2,5 @@
 
 RockEntity::RockEntity() : Entity(EntityType::Rock)
 {
-    LoadSprite("objects\\rock3.tga");
+    LoadSprite("objects\\rock head.tga");
 }

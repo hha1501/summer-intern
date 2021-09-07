@@ -8,9 +8,11 @@
 
 #include "Camera.h"
 #include "Sprite2D.h"
+#include "AtlasSprite2D.h"
 
 #include <memory>
 #include <vector>
+#include <unordered_map>
 
 class GameWorld
 {
@@ -32,13 +34,16 @@ public:
 public:
     GameWorld();
 
-    void Init();
+    void Init(int level);
 
     void SetGravity(GravityDirection gravityDirection);
     void MovePlayer(InputDirection direction);
 
     void Update(float deltaTime);
     void Draw();
+
+    bool IsGameOver() const;
+    bool IsVictory() const;
 
 private:
     void LoadMap(int id);
@@ -49,10 +54,11 @@ private:
     bool TryMovePlayerEntityUnderGravity(Entity* entity, Vector2Int newPosition, GridSlot& currentGridSlot, GridSlot& targetGridSlot);
     bool TryMoveBoxEntityUnderGravity(Entity* entity, Vector2Int newPosition, GridSlot& currentGridSlot, GridSlot& targetGridSlot);
     bool TryMoveRockEntityUnderGravity(Entity* entity, Vector2Int newPosition, GridSlot& currentGridSlot, GridSlot& targetGridSlot);
-    bool TryMoveKeyEntityUnderGravity(Entity* entity, Vector2Int newPosition, GridSlot& currentGridSlot, GridSlot& targetGridSlot);
 
     bool TryMovePlayerUnderInput(InputDirection inputDirection);
     bool TryMoveBoxEntityUnderInput(Entity* entity, Vector2Int direction);
+
+    void OnPlayerPickupKey();
 
     void MarkWorldAsChanged();
     void WorldStepOnce();
@@ -69,22 +75,26 @@ private:
     
     std::vector<std::unique_ptr<Sprite2D>> m_tiles;
     std::vector<std::unique_ptr<Entity>> m_entities;
+    std::vector<std::unique_ptr<Entity>> m_keys;
+
+    AtlasSprite2D* m_doorTile;
 
     PlayerEntity* m_player;
-    KeyEntity* m_keyEntity;
-    bool m_playerHasKey;
+    uint8_t m_keysToCollectCount;
     bool m_gameOver;
     bool m_playerExited;
-    bool m_needToUpdate;
 
     GravityDirection m_currentGravityDirection;
 
+    bool m_needToUpdate;
     float m_updateTimer;
 
     uint8_t m_mapWidth;
     uint8_t m_mapHeight;
     std::vector<GridSlot> m_mapLookup;
+    std::unordered_map<Vector2Int, Entity*, Vector2IntHasher> m_keyLookup;
 
     std::vector<Entity*> m_entityUpdateQueue;
-    std::vector<Entity*> m_entityRemovePendingList;
+    bool m_entitiesListChanged;
+    bool m_keysListChanged;
 };
