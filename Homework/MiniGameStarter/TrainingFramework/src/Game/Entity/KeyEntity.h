@@ -5,5 +5,5 @@
 class KeyEntity : public Entity
 {
 public:
-    KeyEntity();
+    KeyEntity(std::unique_ptr<Sprite2D> sprite);
 };

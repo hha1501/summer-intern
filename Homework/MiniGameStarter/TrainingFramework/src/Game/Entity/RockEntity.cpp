@@ -1,6 +1,5 @@
 #include "RockEntity.h"
 
-RockEntity::RockEntity() : Entity(EntityType::Rock)
+RockEntity::RockEntity(std::unique_ptr<Sprite2D> sprite) : Entity(EntityType::Rock, std::move(sprite))
 {
-    LoadSprite("objects\\rock head.tga");
 }

@@ -1,6 +1,5 @@
 #include "BoxEntity.h"
 
-BoxEntity::BoxEntity() : Entity(EntityType::Box)
+BoxEntity::BoxEntity(std::unique_ptr<Sprite2D> sprite) : Entity(EntityType::Box, std::move(sprite))
 {
-    LoadSprite("objects\\Box.tga");
 }

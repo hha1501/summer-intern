@@ -76,12 +76,13 @@
     <ClCompile Include="src\Game\Entity\PlayerEntity.cpp" />
     <ClCompile Include="src\Game\Entity\Entity.cpp" />
     <ClCompile Include="src\Game\Map\GameMap.cpp" />
-    <ClCompile Include="src\Game\Tile\TileSpriteLoader.cpp" />
+    <ClCompile Include="src\Game\SpriteUtils\SpriteLoader.cpp" />
     <ClCompile Include="src\Game\Entity\BoxEntity.cpp" />
     <ClCompile Include="src\Game\Entity\RockEntity.cpp" />
     <ClCompile Include="src\Game\Entity\KeyEntity.cpp" />
     <ClCompile Include="src\GameStates\GSLevelSelect.cpp" />
     <ClCompile Include="src\GameObject\AtlasSprite2D.cpp" />
+    <ClCompile Include="src\Game\GameWorldEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h">
@@ -155,7 +156,7 @@
     <ClInclude Include="src\Game\GameWorldConfig.h" />
     <ClInclude Include="src\Game\GridSlot.h" />
     <ClInclude Include="src\Game\Tile\TileType.h" />
-    <ClInclude Include="src\Game\Tile\TileSpriteLoader.h" />
+    <ClInclude Include="src\Game\SpriteUtils\SpriteLoader.h" />
     <ClInclude Include="src\Game\Entity\BoxEntity.h" />
     <ClInclude Include="src\Game\Entity\RockEntity.h" />
     <ClInclude Include="src\Game\Entity\KeyEntity.h" />
@@ -164,6 +165,9 @@
     <ClInclude Include="src\GameStates\GSLevelSelect.h" />
     <ClInclude Include="src\Utils\SessionManager.h" />
     <ClInclude Include="src\GameObject\AtlasSprite2D.h" />
+    <ClInclude Include="src\Game\GameWorldEditor.h" />
+    <ClInclude Include="src\Game\SpriteUtils\SpriteResourceConfig.h" />
+    <ClInclude Include="src\Game\Entity\EntityType.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

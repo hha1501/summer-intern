@@ -1,6 +1,5 @@
 #include "KeyEntity.h"
 
-KeyEntity::KeyEntity() : Entity(EntityType::Key)
+KeyEntity::KeyEntity(std::unique_ptr<Sprite2D> sprite) : Entity(EntityType::Key, std::move(sprite))
 {
-    LoadSprite("objects\\key.tga");
 }

@@ -13,7 +13,7 @@ public:
     };
 
 public:
-    PlayerEntity();
+    PlayerEntity(std::unique_ptr<Sprite2D> sprite);
 
     void SetFacingDirection(bool right);
     void SetAnimationState(AnimationState animationState);

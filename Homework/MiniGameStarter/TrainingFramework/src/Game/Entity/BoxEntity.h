@@ -5,5 +5,5 @@
 class BoxEntity : public Entity
 {
 public:
-    BoxEntity();
+    BoxEntity(std::unique_ptr<Sprite2D> sprite);
 };

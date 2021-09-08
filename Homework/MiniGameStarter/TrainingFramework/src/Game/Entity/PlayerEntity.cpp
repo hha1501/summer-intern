@@ -3,7 +3,6 @@
 #include "AtlasSprite2D.h"
 
 constexpr float c_idleFrameTime = 0.15f;
-constexpr Vector2Int c_atlasSize = { 6, 2 };
 constexpr int c_idleFrameCount = 4;
 constexpr int c_fallingFrameNumber = 4;
 constexpr int c_gravityStopFrameNumber = 5;
@@ -11,9 +10,9 @@ constexpr int c_gravityStopFrameNumber = 5;
 constexpr int c_facingRightAtlasRow = 1;
 constexpr int c_facingLeftAtlasRow = 0;
 
-PlayerEntity::PlayerEntity() : Entity(EntityType::Player), m_currentFrameTime{}, m_currentIdleFrameNumber{}, m_isFacingRight(true), m_currentAnimationState(AnimationState::Idle)
+PlayerEntity::PlayerEntity(std::unique_ptr<Sprite2D> sprite) : Entity(EntityType::Player, std::move(sprite)), 
+m_currentFrameTime{}, m_currentIdleFrameNumber{}, m_isFacingRight(true), m_currentAnimationState(AnimationState::Idle)
 {
-    LoadAtlasSprite("player\\v2\\player-idle.tga", c_atlasSize);
     UpdateAnimation();
 }
 

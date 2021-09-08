@@ -6,8 +6,6 @@
 #include "Entity/BoxEntity.h"
 #include "Entity/RockEntity.h"
 
-#include "Tile/TileSpriteLoader.h"
-
 #include "ResourceManagers.h"
 
 #include <array>
@@ -172,47 +170,51 @@ void GameWorld::LoadMap(int id)
 
     m_mapLookup = std::vector<GridSlot>(m_mapWidth * m_mapHeight);
 
+    SpriteLoader spriteLoader;
+
     // Create tiles
-    CreateTiles(gameMap.Tiles());
+    CreateTiles(spriteLoader, gameMap.Tiles());
 
     // Create entities
     const std::vector<GameMap::EntityEntry>& entityEntries = gameMap.Entities();
 
     for (const auto& entityEntry : entityEntries)
     {
-        AddEntity((EntityType)entityEntry.entityType, Vector2Int(entityEntry.x, entityEntry.y));
+        AddEntity(spriteLoader, (EntityType)entityEntry.entityType, Vector2Int(entityEntry.x, entityEntry.y));
     }
 }
 
-void GameWorld::AddEntity(EntityType entityType, Vector2Int position)
+void GameWorld::AddEntity(const SpriteLoader& spriteLoader, EntityType entityType, Vector2Int position)
 {
     Entity* movableEntity = nullptr;
+
+    std::unique_ptr<Sprite2D> sprite = spriteLoader.LoadEntitySprite(entityType, position);
 
     switch (entityType)
     {
     case EntityType::Player: {
-        std::unique_ptr<PlayerEntity> playerEntity = std::make_unique<PlayerEntity>();
+        std::unique_ptr<PlayerEntity> playerEntity = std::make_unique<PlayerEntity>(std::move(sprite));
         movableEntity = playerEntity.get();
         m_player = playerEntity.get();
 
-        playerEntity->SetPosition(position);
         playerEntity->SetCamera(m_worldCamera);
+        playerEntity->SetPosition(position);
 
         m_entities.push_back(std::move(playerEntity));
         break;
     }
     case EntityType::Rock: {
-        std::unique_ptr<RockEntity> rockEntity = std::make_unique<RockEntity>();
+        std::unique_ptr<RockEntity> rockEntity = std::make_unique<RockEntity>(std::move(sprite));
         movableEntity = rockEntity.get();
 
-        rockEntity->SetPosition(position);
         rockEntity->SetCamera(m_worldCamera);
+        rockEntity->SetPosition(position);
 
         m_entities.push_back(std::move(rockEntity));
         break;
     }
     case EntityType::Box: {
-        std::unique_ptr<BoxEntity> boxEntity = std::make_unique<BoxEntity>();
+        std::unique_ptr<BoxEntity> boxEntity = std::make_unique<BoxEntity>(std::move(sprite));
         movableEntity = boxEntity.get();
 
         boxEntity->SetPosition(position);
@@ -222,7 +224,7 @@ void GameWorld::AddEntity(EntityType entityType, Vector2Int position)
         break;
     }
     case EntityType::Key: {
-        std::unique_ptr<KeyEntity> keyEntity = std::make_unique<KeyEntity>();
+        std::unique_ptr<KeyEntity> keyEntity = std::make_unique<KeyEntity>(std::move(sprite));
 
         keyEntity->SetPosition(position);
         keyEntity->SetCamera(m_worldCamera);
@@ -255,11 +257,8 @@ void GameWorld::AddEntity(EntityType entityType, Vector2Int position)
     }
 }
 
-void GameWorld::CreateTiles(const std::vector<uint8_t>& tiles)
+void GameWorld::CreateTiles(const SpriteLoader& spriteLoader, const std::vector<uint8_t>& tiles)
 {
-    TileSpriteLoader tileSpriteLoader = TileSpriteLoader();
-    TileSpriteLoader atlasSpriteLoader = TileSpriteLoader(true);
-
     for (size_t y = 0; y < m_mapHeight; y++)
     {
         for (size_t x = 0; x < m_mapWidth; x++)
@@ -273,11 +272,11 @@ void GameWorld::CreateTiles(const std::vector<uint8_t>& tiles)
                 std::unique_ptr<Sprite2D> tileSprite;
                 if (tileType == TileType::Exit)
                 {
-                    tileSprite = atlasSpriteLoader.LoadSprite(tileType, tileDetails, Vector2Int(x, y));
+                    tileSprite = spriteLoader.LoadTileSprite(tileType, tileDetails, Vector2Int(x, y));
                 }
                 else
                 {
-                    tileSprite = tileSpriteLoader.LoadSprite(tileType, tileDetails, Vector2Int(x, y));
+                    tileSprite = spriteLoader.LoadTileSprite(tileType, tileDetails, Vector2Int(x, y));
                 }
                 tileSprite->SetCamera(m_worldCamera);
 

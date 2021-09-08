@@ -1,17 +1,9 @@
 #pragma once
 
+#include "EntityType.h"
+
 #include "Sprite2D.h"
 #include "../Common/Vector2Int.h"
-
-#include <stdint.h>
-
-enum class EntityType : uint8_t
-{
-    Player,
-    Rock,
-    Box,
-    Key
-};
 
 class Entity
 {
@@ -48,12 +40,9 @@ public:
     }
 
 protected:
-    Entity(EntityType entityType) : m_entityType(entityType), m_valid(true)
+    Entity(EntityType entityType, std::unique_ptr<Sprite2D> sprite) : m_entityType(entityType), m_sprite(std::move(sprite)), m_valid(true)
     {
     }
-
-    void LoadSprite(const char* texture);
-    void LoadAtlasSprite(const char* texture, Vector2Int atlasSize);
 
 protected:
     std::unique_ptr<Sprite2D> m_sprite;

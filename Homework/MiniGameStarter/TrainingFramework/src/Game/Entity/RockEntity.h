@@ -5,5 +5,5 @@
 class RockEntity : public Entity
 {
 public:
-    RockEntity();
+    RockEntity(std::unique_ptr<Sprite2D> sprite);
 };
