@@ -2,5 +2,5 @@
 
 KeyEntity::KeyEntity() : Entity(EntityType::Key)
 {
-    LoadSprite("objects\\key_orange2.tga");
+    LoadSprite("objects\\key.tga");
 }
