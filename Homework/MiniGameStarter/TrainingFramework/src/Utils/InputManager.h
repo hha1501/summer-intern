@@ -20,7 +20,7 @@ public:
     void OnKeyEvent(unsigned char key, bool pressed)
     {
         constexpr uint32_t one = (uint32_t)1;
-        const int keyShiftAmount = (int)KeyValueToCode(key);
+        const int keyShiftAmount = (int)CharToKeyCode(key);
         const uint32_t mask = one << keyShiftAmount;
 
         //if (pressed)
@@ -110,7 +110,7 @@ public:
     }
 
 private:
-    constexpr KeyCode KeyValueToCode(unsigned char key)
+    constexpr KeyCode CharToKeyCode(unsigned char key)
     {
         switch (key)
         {
@@ -130,6 +130,8 @@ private:
             return KeyCode::D;
         case 'S':
             return KeyCode::S;
+        case 'G':
+            return KeyCode::G;
         default:
             return KeyCode::UNKNOWN;
         }

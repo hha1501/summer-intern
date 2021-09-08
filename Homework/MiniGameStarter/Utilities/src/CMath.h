@@ -23,11 +23,11 @@ public:
 	//Vector's operations
 	GLfloat Length();
 	Vector2& Normalize();
-	Vector2 operator + (Vector2& vector);
-	Vector2& operator += (Vector2& vector);
+	Vector2 operator + (const Vector2& vector);
+	Vector2& operator += (const Vector2& vector);
 	Vector2 operator - ();
-	Vector2 operator - (Vector2& vector);
-	Vector2& operator -= (Vector2& vector);
+	Vector2 operator - (const Vector2& vector);
+	Vector2& operator -= (const Vector2& vector);
 	Vector2 operator * (GLfloat k);
 	Vector2& operator *= (GLfloat k);
 	Vector2 operator / (GLfloat k);

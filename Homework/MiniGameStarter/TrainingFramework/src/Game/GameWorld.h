@@ -31,16 +31,28 @@ public:
         Right = 1
     };
 
+    enum class WorldState
+    {
+        Invalid,
+        Playing,
+        GravitySelecting,
+        Updating,
+        Ended
+    };
+
 public:
     GameWorld();
 
     void Init(int level);
 
+    void ToggleGravitySelection();
     void SetGravity(GravityDirection gravityDirection);
     void MovePlayer(InputDirection direction);
 
     void Update(float deltaTime);
     void Draw();
+
+    bool IsInGravtitySelection() const;
 
     bool IsGameOver() const;
     bool IsVictory() const;
@@ -60,7 +72,7 @@ private:
 
     void OnPlayerPickupKey();
 
-    void MarkWorldAsChanged();
+    void MarkWorldAsChanged(bool byPlayerMovement);
     void WorldStepOnce();
     bool ApplyGravity();
 
@@ -86,7 +98,7 @@ private:
 
     GravityDirection m_currentGravityDirection;
 
-    bool m_needToUpdate;
+    WorldState m_worldState;
     float m_updateTimer;
 
     uint8_t m_mapWidth;

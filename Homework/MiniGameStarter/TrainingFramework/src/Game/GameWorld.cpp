@@ -16,9 +16,13 @@
 
 using namespace GameWorldConfig;
 
+constexpr float c_updateDelayTime = 0.2f;
+constexpr float c_updateDelayAfterPlayerMovement = 0.1f;
+
+
 GameWorld::GameWorld() : m_worldCamera{}, m_tiles{}, m_entities{}, m_keys{}, m_doorTile{}, m_player{},
-m_keysToCollectCount{}, m_gameOver(false), m_playerExited(false), 
-m_currentGravityDirection{}, m_needToUpdate(false), m_updateTimer{},
+m_keysToCollectCount{}, m_gameOver(false), m_playerExited(false),
+m_currentGravityDirection{}, m_worldState(WorldState::Invalid), m_updateTimer{},
 m_mapWidth{}, m_mapHeight{}, m_mapLookup{}, m_keyLookup{}, m_entityUpdateQueue{}, m_entitiesListChanged(false), m_keysListChanged(false)
 {
 }
@@ -28,11 +32,27 @@ void GameWorld::Init(int level)
     m_worldCamera = std::make_shared<Camera>(0, 0.0f, c_mapWidth, c_mapHeight, 0.0f, -1.0f, 1.0f, 0.0f);
 
     LoadMap(level);
+
+    m_worldState = WorldState::Playing;
+}
+
+void GameWorld::ToggleGravitySelection()
+{
+    if (m_worldState == WorldState::Playing)
+    {
+        m_worldState = WorldState::GravitySelecting;
+
+        m_player->SetAnimationState(PlayerEntity::AnimationState::GravityStop);
+    }
+    else if (m_worldState == WorldState::GravitySelecting)
+    {
+        MarkWorldAsChanged(false);
+    }
 }
 
 void GameWorld::SetGravity(GravityDirection gravityDirection)
 {
-    if (m_needToUpdate || m_gameOver || m_playerExited)
+    if (m_worldState != WorldState::GravitySelecting)
     {
         return;
     }
@@ -70,39 +90,38 @@ void GameWorld::SetGravity(GravityDirection gravityDirection)
     {
         entity->SetRotation(Vector3(0, 0, zAngle));
     }
-
-    MarkWorldAsChanged();
 }
 
 void GameWorld::MovePlayer(InputDirection direction)
 {
-    if (m_needToUpdate || m_gameOver || m_playerExited)
+    if (m_worldState != WorldState::Playing)
     {
         return;
     }
 
     if (TryMovePlayerUnderInput(direction))
     {
-        MarkWorldAsChanged();
+        MarkWorldAsChanged(true);
     }
 }
 
 void GameWorld::Update(float deltaTime)
 {
-    constexpr float c_frameTime = 0.2f;
-
-    m_updateTimer += deltaTime;
-    if (m_updateTimer >= c_frameTime)
+    if (m_worldState == WorldState::Updating)
     {
-        if (m_needToUpdate)
+        m_updateTimer += deltaTime;
+        if (m_updateTimer >= c_updateDelayTime)
         {
             WorldStepOnce();
-        }
 
-        m_updateTimer -= c_frameTime;
+            m_updateTimer -= c_updateDelayTime;
+        }
     }
 
-    m_player->Update(deltaTime);
+    if (!m_gameOver)
+    {
+        m_player->Update(deltaTime);
+    }
 }
 
 void GameWorld::Draw()
@@ -127,6 +146,11 @@ void GameWorld::Draw()
             key->Draw();
         }
     }
+}
+
+bool GameWorld::IsInGravtitySelection() const
+{
+    return m_worldState == WorldState::GravitySelecting;
 }
 
 bool GameWorld::IsGameOver() const
@@ -337,14 +361,14 @@ bool GameWorld::TryMovePlayerEntityUnderGravity(Entity* entity, Vector2Int newPo
         entity->SetPosition(newPosition);
 
         // Update animation
-        m_player->SetFalling(true);
+        m_player->SetAnimationState(PlayerEntity::AnimationState::Falling);
 
         return true;
     }
 
     // Blocked by tile or another entity
     // Update animation
-    m_player->SetFalling(false);
+    m_player->SetAnimationState(PlayerEntity::AnimationState::Idle);
 
     return false;
 }
@@ -411,6 +435,7 @@ bool GameWorld::TryMoveRockEntityUnderGravity(Entity* entity, Vector2Int newPosi
         m_player = nullptr;
 
         m_gameOver = true;
+        m_worldState = WorldState::Ended;
 
         // Update grid slots
         currentGridSlot = GridSlot();
@@ -461,6 +486,7 @@ bool GameWorld::TryMovePlayerUnderInput(InputDirection inputDirection)
         {
             currentGridSlot = GridSlot();
             m_playerExited = true;
+            m_worldState = WorldState::Ended;
 
             // Update position
             entity->SetPosition(newPosition);
@@ -590,10 +616,10 @@ void GameWorld::OnPlayerPickupKey()
     }
 }
 
-void GameWorld::MarkWorldAsChanged()
+void GameWorld::MarkWorldAsChanged(bool byPlayerMovement)
 {
-    m_needToUpdate = true;
-    m_updateTimer = 0.0f;
+    m_worldState = WorldState::Updating;
+    m_updateTimer = byPlayerMovement ? c_updateDelayAfterPlayerMovement : 0.0f;
 
     // Queue up entities to be updated
     // List of entities will be sorted according to vertical component of gravity vector
@@ -634,11 +660,12 @@ void GameWorld::MarkWorldAsChanged()
 
 void GameWorld::WorldStepOnce()
 {
-    m_needToUpdate = ApplyGravity();
+    bool needToUpdate = ApplyGravity();
 
-    if (!m_needToUpdate)
+    if (!needToUpdate)
     {
         ProcessEntityRemovePendingList();
+        m_worldState = WorldState::Playing;
     }
 }
 
@@ -668,7 +695,7 @@ bool GameWorld::ApplyGravity()
 void GameWorld::MarkEntityAsRemoved(Entity* entity)
 {
     entity->Invalidate();
-    
+
     if (entity->GetType() == EntityType::Key)
     {
         m_keysListChanged = true;

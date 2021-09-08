@@ -137,30 +137,31 @@ void GSPlay::Update(float deltaTime)
         it->Update(deltaTime);
     }
 
-    if (m_inputManager->KeyDown(KeyCode::W))
+    if (m_inputManager->KeyDown(KeyCode::G))
     {
-        m_gameWorld.SetGravity(GameWorld::GravityDirection::Up);
+        m_gameWorld.ToggleGravitySelection();
     }
-    else if (m_inputManager->KeyDown(KeyCode::A))
+    else if (m_inputManager->KeyDown(KeyCode::LEFT))
     {
-        m_gameWorld.SetGravity(GameWorld::GravityDirection::Left);
-    }
-    else if (m_inputManager->KeyDown(KeyCode::S))
-    {
-        m_gameWorld.SetGravity(GameWorld::GravityDirection::Down);
-    }
-    else if (m_inputManager->KeyDown(KeyCode::D))
-    {
-        m_gameWorld.SetGravity(GameWorld::GravityDirection::Right);
-    }
-
-    if (m_inputManager->KeyDown(KeyCode::LEFT))
-    {
-        m_gameWorld.MovePlayer(GameWorld::InputDirection::Left);
+        if (m_gameWorld.IsInGravtitySelection())
+        {
+            m_gameWorld.SetGravity(GameWorld::GravityDirection::Left);
+        }
+        else
+        {
+            m_gameWorld.MovePlayer(GameWorld::InputDirection::Left);
+        }
     }
     else if (m_inputManager->KeyDown(KeyCode::RIGHT))
     {
-        m_gameWorld.MovePlayer(GameWorld::InputDirection::Right);
+        if (m_gameWorld.IsInGravtitySelection())
+        {
+            m_gameWorld.SetGravity(GameWorld::GravityDirection::Right);
+        }
+        else
+        {
+            m_gameWorld.MovePlayer(GameWorld::InputDirection::Right);
+        }
     }
 
     m_gameWorld.Update(deltaTime);

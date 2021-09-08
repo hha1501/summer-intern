@@ -5,10 +5,18 @@
 class PlayerEntity : public Entity
 {
 public:
+    enum class AnimationState
+    {
+        Idle,
+        Falling,
+        GravityStop
+    };
+
+public:
     PlayerEntity();
 
     void SetFacingDirection(bool right);
-    void SetFalling(bool falling);
+    void SetAnimationState(AnimationState animationState);
 
     void Update(float deltaTime) override;
 
@@ -19,5 +27,6 @@ private:
     float m_currentFrameTime;
     int m_currentIdleFrameNumber;
     bool m_isFacingRight;
-    bool m_isFalling;
+    
+    AnimationState m_currentAnimationState;
 };
