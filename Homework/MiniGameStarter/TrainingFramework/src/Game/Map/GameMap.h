@@ -59,7 +59,7 @@ private:
 public:
     // TODO: refer to ResourceManager for Data path -or-
     // move map loading/saving to ResourceManager
-    static constexpr std::string_view c_mapFileNamePrefix = "..\\Data\\Map\\map"sv;
+    static constexpr std::string_view c_mapFileNamePrefix = "..\\Data\\Maps\\map"sv;
 
     static bool LoadFromFile(int id, GameMap* map);
     static bool SaveToFile(const GameMap& gameMap, int id);

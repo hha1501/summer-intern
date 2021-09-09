@@ -14,7 +14,7 @@ ResourceManagers::ResourceManagers()
 	std::string dataPath = "..\\Data\\";
 	m_ShaderPath = dataPath + "Shaders\\";
 	m_TexturePath = dataPath + "Textures\\";
-	m_ModelsPath = dataPath + "Model\\";
+	m_ModelsPath = dataPath + "Models\\";
 	m_FontPath = dataPath + "Fonts\\";
 }
 
@@ -38,7 +38,6 @@ void ResourceManagers::AddShader(const std::string& name)
 	shaders->Init(vs, fs);
 
 	m_MapShader.insert(std::pair<std::string, std::shared_ptr<Shader>>(name, shaders));
-
 }
 
 void ResourceManagers::AddModel(const std::string& name)
