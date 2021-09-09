@@ -59,10 +59,12 @@ public:
     bool IsGameOver() const;
     bool IsVictory() const;
 
+    bool IsInvalid() const;
+
 private:
-    void LoadMap(int id);
-    void AddEntity(const SpriteLoader& spriteLoader, EntityType entityType, Vector2Int position);
-    void CreateTiles(const SpriteLoader& spriteLoader, const std::vector<uint8_t>& tiles);
+    bool LoadMap(int id);
+    bool AddEntity(const SpriteLoader& spriteLoader, EntityType entityType, Vector2Int position);
+    bool CreateTiles(const SpriteLoader& spriteLoader, const std::vector<uint8_t>& tiles);
 
     bool TryMoveEntityUnderGravity(Entity* entity, Vector2Int newPosition);
     bool TryMovePlayerEntityUnderGravity(Entity* entity, Vector2Int newPosition, GridSlot& currentGridSlot, GridSlot& targetGridSlot);

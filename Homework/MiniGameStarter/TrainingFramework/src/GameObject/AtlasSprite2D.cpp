@@ -96,3 +96,13 @@ void AtlasSprite2D::SetAtlasCoord(Vector2Int coord)
 {
 	m_currentAtlasCoord = coord;
 }
+
+std::unique_ptr<Sprite2D> AtlasSprite2D::Clone() const
+{
+	std::unique_ptr<Sprite2D> newSprite = std::make_unique<AtlasSprite2D>(m_pModel, m_pShader, m_pTexture, m_atlasSize);
+	newSprite->SetCamera(m_pCamera);
+	newSprite->SetSize(m_width, m_height);
+	newSprite->Set2DPosition(Vector2(m_position.x, m_position.y));
+
+	return newSprite;
+}

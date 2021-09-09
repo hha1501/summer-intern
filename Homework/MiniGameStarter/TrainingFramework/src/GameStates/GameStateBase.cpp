@@ -7,6 +7,7 @@
 #include "GSMenu.h"
 #include "GSCredit.h"
 #include "GSLevelSelect.h"
+#include "GSLevelEditor.h"
 
 #include "GameStatebase.h"
 
@@ -35,6 +36,8 @@ std::shared_ptr<GameStateBase> GameStateBase::CreateState(StateType stt)
 	case StateType::STATE_PLAY:
 		gs = std::make_shared<GSPlay>();
 		break;
+	case StateType::STATE_LEVEL_EDITOR:
+		gs = std::make_shared<GSLevelEditor>();
 	default:
 		break;
 	}

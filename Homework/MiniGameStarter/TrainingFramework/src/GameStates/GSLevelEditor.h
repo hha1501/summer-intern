@@ -1,19 +1,22 @@
 #pragma once
-
 #include "GameStateBase.h"
 
-#include "Utils/InputManager.h"
+#include "../Game/Editor/GameWorldEditor.h"
 
-#include <vector>
+#include "../Utils/InputManager.h"
+#include "../Utils/SessionManager.h"
 
 class Sprite2D;
+class Sprite3D;
 class Text;
 class GameButton;
 
-class GSLevelSelect : public GameStateBase
+class GSLevelEditor :
+    public GameStateBase
 {
 public:
-    GSLevelSelect();
+    GSLevelEditor();
+    ~GSLevelEditor() = default;
 
     void Init() override;
     void Exit() override;
@@ -29,18 +32,21 @@ public:
     void Draw() override;
 
 private:
-    void PlaceLevelButtons();
+    void ToggleDrawingMode();
 
-    void OnLevelSelected(int levelID);
+    void RestartEditor();
+    void Save();
 
 private:
     std::unique_ptr<Sprite2D> m_background;
-    std::unique_ptr<Sprite2D> m_titleLevel;
-
     std::vector<std::unique_ptr<GameButton>> m_listButton;
-    std::vector<std::unique_ptr<Text>> m_listText;
 
     const InputManager* m_inputManager;
+    bool m_inDrawingMode;
 
-    bool m_inEditorMode;
+    int m_selectedLevelID;
+
+
+    GameWorldEditor m_gameWorldEditor;
 };
+

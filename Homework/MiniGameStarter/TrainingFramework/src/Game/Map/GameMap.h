@@ -61,8 +61,17 @@ public:
     // move map loading/saving to ResourceManager
     static constexpr std::string_view c_mapFileNamePrefix = "..\\Data\\Map\\map"sv;
 
-    static GameMap LoadFromFile(int id);
-    static void SaveToFile(const GameMap& gameMap, int id);
+    static bool LoadFromFile(int id, GameMap* map);
+    static bool SaveToFile(const GameMap& gameMap, int id);
+
+    static constexpr uint8_t PackTileInfo(uint8_t tileType, uint8_t tileDetails)
+    {
+        return (tileType & c_tileTypeMask) | tileDetails << c_tileDetailsMaskShift;
+    }
+    static constexpr std::pair<uint8_t, uint8_t> UnpackTileData(uint8_t tileData)
+    {
+        return std::make_pair(tileData & c_tileTypeMask, tileData >> c_tileDetailsMaskShift);
+    }
 
     uint8_t Width() const
     {

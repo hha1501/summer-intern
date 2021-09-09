@@ -13,6 +13,8 @@ public:
 
     void SetAtlasCoord(Vector2Int coord);
 
+    std::unique_ptr<Sprite2D> Clone() const override;
+
 private:
     Vector2Int m_atlasSize;
     Vector2Int m_currentAtlasCoord;

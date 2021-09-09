@@ -106,6 +106,7 @@ public:
 	Vector4 operator - (Vector4& vector);
 	Vector4& operator -= (Vector4& vector);
 	Vector4 operator * (GLfloat k);
+	Vector4 operator * (const Vector4& vector);
 	Vector4& operator *= (GLfloat k);
 	Vector4 operator / (GLfloat k);
 	Vector4& operator /= (GLfloat k);
@@ -135,7 +136,8 @@ public:
 	//constructors
 	Matrix() {}
 	Matrix(GLfloat val);
-	Matrix(const Matrix& mat);
+	Matrix(const Matrix& mat) = default;
+	Matrix(const Vector4& v1, const Vector4& v2, const Vector4& v3, const Vector4& v4);
 
 	// Matrix operations
 	Matrix& SetZero();
@@ -159,6 +161,7 @@ public:
 	Matrix& SetPerspective(GLfloat fovY, GLfloat aspect, GLfloat nearPlane, GLfloat farPlane);
 
 	Matrix Transpose();
+	Matrix Inverse();
 
 	Matrix operator + (Matrix& mat);
 	Matrix& operator += (Matrix& mat);

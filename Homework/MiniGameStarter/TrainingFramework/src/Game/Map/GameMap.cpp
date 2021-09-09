@@ -4,16 +4,22 @@
 #include <string>
 #include <assert.h>
 
-GameMap GameMap::LoadFromFile(int id)
+bool GameMap::LoadFromFile(int id, GameMap* map)
 {
     std::string fileName = std::string(c_mapFileNamePrefix) + std::to_string(id);
     std::ifstream mapFile{ fileName, std::ios_base::binary };
-    assert(mapFile.is_open());
+    if (!mapFile.is_open())
+    {
+        return false;
+    }
 
     // Read section headers and ensure map file is valid
     uint32_t entitySectionSize;
     mapFile.read(reinterpret_cast<char*>(&entitySectionSize), sizeof(entitySectionSize));
-    assert(entitySectionSize % sizeof(EntityEntry) == 0);
+    if (entitySectionSize % sizeof(EntityEntry) != 0)
+    {
+        return false;
+    }
 
     mapFile.seekg(sizeof(entitySectionSize) + entitySectionSize);
 
@@ -26,11 +32,17 @@ GameMap GameMap::LoadFromFile(int id)
     std::streampos tileDataStart = mapFile.tellg();
 
     uint32_t tileDataSize = tileSectionSize - (sizeof(mapWidth) + sizeof(mapHeight));
-    assert(tileDataSize == mapWidth * mapHeight);
+    if (tileDataSize != mapWidth * mapHeight)
+    {
+        return false;
+    }
 
     mapFile.seekg(0, mapFile.end);
     std::streampos fileEnd = mapFile.tellg();
-    assert((fileEnd - tileDataStart) == tileDataSize);
+    if ((fileEnd - tileDataStart) != tileDataSize)
+    {
+        return false;
+    }
 
     // Preallocate GameMap
     GameMap gameMap{mapWidth, mapHeight};
@@ -47,14 +59,19 @@ GameMap GameMap::LoadFromFile(int id)
     mapFile.seekg(tileDataStart);
     mapFile.read(reinterpret_cast<char*>(tiles.data()), tileDataSize);
 
-    return gameMap;
+    *map = std::move(gameMap);
+
+    return true;
 }
 
-void GameMap::SaveToFile(const GameMap& gameMap, int id)
+bool GameMap::SaveToFile(const GameMap& gameMap, int id)
 {
     std::string fileName = std::string(c_mapFileNamePrefix) + std::to_string(id);
     std::ofstream mapFile{ fileName, std::ios_base::binary };
-    assert(mapFile.is_open());
+    if (!mapFile.is_open())
+    {
+        return false;
+    }
 
     // Write entity section
     const std::vector<EntityEntry>& entities = gameMap.Entities();
@@ -71,6 +88,8 @@ void GameMap::SaveToFile(const GameMap& gameMap, int id)
     mapFile.write(reinterpret_cast<const char*>(&gameMap.m_width), sizeof(uint8_t));
     mapFile.write(reinterpret_cast<const char*>(&gameMap.m_height), sizeof(uint8_t));
     mapFile.write(reinterpret_cast<const char*>(tiles.data()), tiles.size());
+
+    return true;
 }
 
 void GameMap::Clear()

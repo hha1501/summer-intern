@@ -16,7 +16,7 @@ class GSPlay :
 {
 public:
     GSPlay();
-    ~GSPlay();
+    ~GSPlay() = default;
 
     void Init() override;
     void Exit() override;
@@ -36,8 +36,8 @@ private:
     void OnVictory();
 
 private:
-    std::shared_ptr<Sprite2D> m_background;
-    std::list<std::shared_ptr<GameButton>> m_listButton;
+    std::unique_ptr<Sprite2D> m_background;
+    std::vector<std::unique_ptr<GameButton>> m_listButton;
 
     std::unique_ptr<Sprite2D> m_victoryPanel;
 

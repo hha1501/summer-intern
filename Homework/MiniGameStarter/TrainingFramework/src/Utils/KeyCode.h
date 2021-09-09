@@ -11,5 +11,6 @@ enum class KeyCode
     W,
     D,
     S,
-    G
+    G,
+    E
 };

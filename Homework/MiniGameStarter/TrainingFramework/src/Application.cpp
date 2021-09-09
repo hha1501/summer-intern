@@ -50,6 +50,8 @@ void Application::HandleKeyEvent(unsigned char key, bool bIsPressed)
 
 void Application::HandleTouchEvent(GLint x, GLint y, bool bIsPressed)
 {
+	m_inputManager.OnTouchEvent(bIsPressed);
+
 	if (GameStateMachine::GetInstance()->HasState())
 		GameStateMachine::GetInstance()->CurrentState()->HandleTouchEvents(x, y, bIsPressed);
 }

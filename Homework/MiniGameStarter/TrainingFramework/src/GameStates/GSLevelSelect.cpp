@@ -10,12 +10,14 @@
 #include "GameButton.h"
 #include "Application.h"
 
-GSLevelSelect::GSLevelSelect()
+GSLevelSelect::GSLevelSelect() : m_inEditorMode(false)
 {
 }
 
 void GSLevelSelect::Init()
 {
+    m_inputManager = Application::GetInstance()->GetInputManager();
+
     auto resourceManager = ResourceManagers::GetInstance();
 
     auto model = resourceManager->GetModel("Sprite2D.nfg");
@@ -83,6 +85,7 @@ void GSLevelSelect::HandleMouseMoveEvents(int x, int y)
 
 void GSLevelSelect::Update(float deltaTime)
 {
+    m_inEditorMode = m_inputManager->Key(KeyCode::E);
 }
 
 void GSLevelSelect::Draw()
@@ -131,10 +134,9 @@ void GSLevelSelect::PlaceLevelButtons()
         std::unique_ptr<GameButton> buttonLevel = std::make_unique<GameButton>(model, textureShader, buttonTexture);
         buttonLevel->Set2DPosition(currentButtonPosition);
         buttonLevel->SetSize(80.0f, 80.0f);
-        buttonLevel->SetOnClick([i]()
+        buttonLevel->SetOnClick([i, this]()
         {
-            Application::GetInstance()->GetSessionManager()->SetSelectedLevel(i);
-            GameStateMachine::GetInstance()->ChangeState(StateType::STATE_PLAY);
+            OnLevelSelected(i);
         });
 
         m_listButton.push_back(std::move(buttonLevel));
@@ -156,5 +158,19 @@ void GSLevelSelect::PlaceLevelButtons()
         {
             currentButtonPosition.x += horizontalSpacing;
         }
+    }
+}
+
+void GSLevelSelect::OnLevelSelected(int levelID)
+{
+    Application::GetInstance()->GetSessionManager()->SetSelectedLevel(levelID);
+
+    if (m_inEditorMode)
+    {
+        GameStateMachine::GetInstance()->ChangeState(StateType::STATE_LEVEL_EDITOR);
+    }
+    else
+    {
+        GameStateMachine::GetInstance()->ChangeState(StateType::STATE_PLAY);
     }
 }

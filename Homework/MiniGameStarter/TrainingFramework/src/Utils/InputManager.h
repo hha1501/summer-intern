@@ -10,46 +10,23 @@
 class InputManager
 {
 public:
-    InputManager() : m_keyHoldingBitSet{}, m_keyDownBitSet{}, m_keyUpBitSet{}
+    InputManager() : m_keyHoldingBitSet{}, m_keyDownBitSet{}, m_keyUpBitSet{}, m_mouseButtonPressed(false)
     {
     }
 
     InputManager(const InputManager&) = delete;
     InputManager& operator=(const InputManager&) = delete;
 
+    void OnTouchEvent(bool pressed)
+    {
+        m_mouseButtonPressed = pressed;
+    }
+
     void OnKeyEvent(unsigned char key, bool pressed)
     {
         constexpr uint32_t one = (uint32_t)1;
         const int keyShiftAmount = (int)CharToKeyCode(key);
         const uint32_t mask = one << keyShiftAmount;
-
-        //if (pressed)
-        //{
-        //	// ____1____
-        //	m_keyDownBitSet |= mask;
-
-        //	//		____ 1 ____ ^
-        //	//		0000 k 0000
-        //	// =	____~k ____
-        //	m_keyDownBitSet ^= (m_keyHoldingBitSet & mask);
-
-        //	// Set holding state
-        //	m_keyHoldingBitSet |= mask;
-
-        //	// Clear up state
-        //	m_keyUpBitSet &= ~mask;
-        //}
-        //else
-        //{
-        //	// Clear holding state
-        //	m_keyHoldingBitSet &= ~mask;
-
-        //	// Clear down state
-        //	m_keyDownBitSet &= ~mask;
-
-        //	// Set up state
-        //	m_keyUpBitSet |= mask;
-        //}
 
         if (pressed)
         {
@@ -109,27 +86,34 @@ public:
         return (m_keyUpBitSet & mask) != 0;
     }
 
+    bool Touch() const
+    {
+        return m_mouseButtonPressed;
+    }
+
 private:
     constexpr KeyCode CharToKeyCode(unsigned char key)
     {
         switch (key)
         {
-        case VK_LEFT:
-            return KeyCode::LEFT;
-        case VK_RIGHT:
-            return KeyCode::RIGHT;
         case VK_UP:
             return KeyCode::UP;
         case VK_DOWN:
             return KeyCode::DOWN;
-        case 'A':
-            return KeyCode::A;
+        case VK_LEFT:
+            return KeyCode::LEFT;
+        case VK_RIGHT:
+            return KeyCode::RIGHT;
         case 'W':
             return KeyCode::W;
-        case 'D':
-            return KeyCode::D;
+        case 'A':
+            return KeyCode::A;
         case 'S':
             return KeyCode::S;
+        case 'D':
+            return KeyCode::D;
+        case 'E':
+            return KeyCode::E;
         case 'G':
             return KeyCode::G;
         default:
@@ -141,4 +125,6 @@ private:
     uint32_t m_keyHoldingBitSet;
     uint32_t m_keyDownBitSet;
     uint32_t m_keyUpBitSet;
+
+    bool m_mouseButtonPressed;
 };

@@ -29,13 +29,23 @@ void GameWorld::Init(int level)
 {
     m_worldCamera = std::make_shared<Camera>(0, 0.0f, c_mapWidth, c_mapHeight, 0.0f, -1.0f, 1.0f, 0.0f);
 
-    LoadMap(level);
-
-    m_worldState = WorldState::Playing;
+    if (LoadMap(level))
+    {
+        m_worldState = WorldState::Playing;
+    }
+    else
+    {
+        LOGI("Invalid map construction\n");
+    }
 }
 
 void GameWorld::ToggleGravitySelection()
 {
+    if (IsInvalid())
+    {
+        return;
+    }
+
     if (m_worldState == WorldState::Playing)
     {
         m_worldState = WorldState::GravitySelecting;
@@ -50,6 +60,11 @@ void GameWorld::ToggleGravitySelection()
 
 void GameWorld::SetGravity(GravityDirection gravityDirection)
 {
+    if (IsInvalid())
+    {
+        return;
+    }
+
     if (m_worldState != WorldState::GravitySelecting)
     {
         return;
@@ -92,6 +107,11 @@ void GameWorld::SetGravity(GravityDirection gravityDirection)
 
 void GameWorld::MovePlayer(InputDirection direction)
 {
+    if (IsInvalid())
+    {
+        return;
+    }
+
     if (m_worldState != WorldState::Playing)
     {
         return;
@@ -105,6 +125,11 @@ void GameWorld::MovePlayer(InputDirection direction)
 
 void GameWorld::Update(float deltaTime)
 {
+    if (IsInvalid())
+    {
+        return;
+    }
+
     if (m_worldState == WorldState::Updating)
     {
         m_updateTimer += deltaTime;
@@ -124,6 +149,11 @@ void GameWorld::Update(float deltaTime)
 
 void GameWorld::Draw()
 {
+    if (IsInvalid())
+    {
+        return;
+    }
+
     for (auto& tile : m_tiles)
     {
         tile->Draw();
@@ -161,9 +191,19 @@ bool GameWorld::IsVictory() const
     return m_playerExited;
 }
 
-void GameWorld::LoadMap(int id)
+bool GameWorld::IsInvalid() const
 {
-    GameMap gameMap = GameMap::LoadFromFile(id);
+    return m_worldState == WorldState::Invalid;
+}
+
+bool GameWorld::LoadMap(int id)
+{
+    GameMap gameMap;
+    if (!GameMap::LoadFromFile(id, &gameMap))
+    {
+        LOGI("Cannot load map %d\n", id);
+        return false;
+    }
 
     m_mapWidth = gameMap.Width();
     m_mapHeight = gameMap.Height();
@@ -173,18 +213,26 @@ void GameWorld::LoadMap(int id)
     SpriteLoader spriteLoader;
 
     // Create tiles
-    CreateTiles(spriteLoader, gameMap.Tiles());
+    if (!CreateTiles(spriteLoader, gameMap.Tiles()))
+    {
+        return false;
+    } 
 
     // Create entities
     const std::vector<GameMap::EntityEntry>& entityEntries = gameMap.Entities();
 
     for (const auto& entityEntry : entityEntries)
-    {
-        AddEntity(spriteLoader, (EntityType)entityEntry.entityType, Vector2Int(entityEntry.x, entityEntry.y));
+    {  
+        if (!AddEntity(spriteLoader, (EntityType)entityEntry.entityType, Vector2Int(entityEntry.x, entityEntry.y)))
+        {
+            return false;
+        } 
     }
+
+    return true;
 }
 
-void GameWorld::AddEntity(const SpriteLoader& spriteLoader, EntityType entityType, Vector2Int position)
+bool GameWorld::AddEntity(const SpriteLoader& spriteLoader, EntityType entityType, Vector2Int position)
 {
     Entity* movableEntity = nullptr;
 
@@ -230,7 +278,10 @@ void GameWorld::AddEntity(const SpriteLoader& spriteLoader, EntityType entityTyp
         keyEntity->SetCamera(m_worldCamera);
 
         bool insertResult = m_keyLookup.insert({ position, keyEntity.get() }).second;
-        assert(insertResult && "Invalid map construction");
+        if (!insertResult)
+        {
+            return false;
+        }
 
         m_keys.push_back(std::move(keyEntity));
 
@@ -252,20 +303,20 @@ void GameWorld::AddEntity(const SpriteLoader& spriteLoader, EntityType entityTyp
         }
         else
         {
-            assert(false && "Invalid map construction");
+            return false;
         }
     }
 }
 
-void GameWorld::CreateTiles(const SpriteLoader& spriteLoader, const std::vector<uint8_t>& tiles)
+bool GameWorld::CreateTiles(const SpriteLoader& spriteLoader, const std::vector<uint8_t>& tiles)
 {
     for (size_t y = 0; y < m_mapHeight; y++)
     {
         for (size_t x = 0; x < m_mapWidth; x++)
         {
-            uint8_t tileData = tiles[GridPos2Index(Vector2Int(x, y))];
-            TileType tileType = (TileType)(tileData & GameMap::c_tileTypeMask);
-            uint8_t tileDetails = tileData >> GameMap::c_tileDetailsMaskShift;
+            std::pair<uint8_t, uint8_t> tileData = GameMap::UnpackTileData(tiles[GridPos2Index(Vector2Int(x, y))]);
+            TileType tileType = (TileType)tileData.first;
+            uint8_t tileDetails = tileData.second;
 
             if (tileType != TileType::Empty)
             {
@@ -281,14 +332,7 @@ void GameWorld::CreateTiles(const SpriteLoader& spriteLoader, const std::vector<
                 tileSprite->SetCamera(m_worldCamera);
 
                 GridSlot& gridSlot = m_mapLookup[GridPos2Index(Vector2Int(x, y))];
-                if (gridSlot.Type() == GridSlot::ContentType::Empty)
-                {
-                    gridSlot = GridSlot(tileType);
-                }
-                else
-                {
-                    assert(false && "Invalid map construction");
-                }
+                gridSlot = GridSlot(tileType);
 
                 if (tileType == TileType::Exit)
                 {
@@ -300,7 +344,7 @@ void GameWorld::CreateTiles(const SpriteLoader& spriteLoader, const std::vector<
         }
     }
 
-    assert(m_doorTile != nullptr && "Map contains no door");
+    return m_doorTile != nullptr;
 }
 
 

@@ -72,7 +72,7 @@ void GSMenu::Init()
     shader = ResourceManagers::GetInstance()->GetShader("TextShader");
     std::shared_ptr<Font> font = ResourceManagers::GetInstance()->GetFont("Gamer.ttf");
     m_textGameName = std::make_shared<Text>(shader, font, "an-gravi-ti", Vector4(255.0f, 93.0f, 33.0f, 255.0f) / 255.0f, 3.0f);
-    m_textGameName->Set2DPosition(Globals::screenWidth / 2 - 130, Globals::screenHeight / 2 - 100);
+    m_textGameName->Set2DPosition((float)Globals::screenWidth / 2 - 130, (float)Globals::screenHeight / 2 - 100);
 }
 
 void GSMenu::Exit()
@@ -99,7 +99,7 @@ void GSMenu::HandleKeyEvents(int key, bool bIsPressed)
 
 void GSMenu::HandleTouchEvents(int x, int y, bool bIsPressed)
 {
-    for (auto button : m_listButton)
+    for (auto& button : m_listButton)
     {
         if (button->HandleTouchEvents(x, y, bIsPressed))
         {
@@ -115,7 +115,7 @@ void GSMenu::HandleMouseMoveEvents(int x, int y)
 void GSMenu::Update(float deltaTime)
 {
     m_background->Update(deltaTime);
-    for (auto it : m_listButton)
+    for (auto& it : m_listButton)
     {
         it->Update(deltaTime);
     }
@@ -124,7 +124,7 @@ void GSMenu::Update(float deltaTime)
 void GSMenu::Draw()
 {
     m_background->Draw();
-    for (auto it : m_listButton)
+    for (auto& it : m_listButton)
     {
         it->Draw();
     }

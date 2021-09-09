@@ -82,7 +82,8 @@
     <ClCompile Include="src\Game\Entity\KeyEntity.cpp" />
     <ClCompile Include="src\GameStates\GSLevelSelect.cpp" />
     <ClCompile Include="src\GameObject\AtlasSprite2D.cpp" />
-    <ClCompile Include="src\Game\GameWorldEditor.cpp" />
+    <ClCompile Include="src\Game\Editor\GameWorldEditor.cpp" />
+    <ClCompile Include="src\GameStates\GSLevelEditor.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h">
@@ -165,9 +166,13 @@
     <ClInclude Include="src\GameStates\GSLevelSelect.h" />
     <ClInclude Include="src\Utils\SessionManager.h" />
     <ClInclude Include="src\GameObject\AtlasSprite2D.h" />
-    <ClInclude Include="src\Game\GameWorldEditor.h" />
+    <ClInclude Include="src\Game\Editor\GameWorldEditor.h" />
     <ClInclude Include="src\Game\SpriteUtils\SpriteResourceConfig.h" />
     <ClInclude Include="src\Game\Entity\EntityType.h" />
+    <ClInclude Include="src\GameStates\GSLevelEditor.h" />
+    <ClInclude Include="src\Game\Editor\EditorGridSlot.h" />
+    <ClInclude Include="src\Game\Editor\PaletteEntry.h" />
+    <ClInclude Include="src\Game\SpriteUtils\SpriteTraits.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

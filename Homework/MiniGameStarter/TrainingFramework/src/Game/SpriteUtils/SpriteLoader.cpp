@@ -3,6 +3,8 @@
 #include "../GameWorldConfig.h"
 #include "SpriteResourceConfig.h"
 
+#include "SpriteTraits.h"
+
 #include "Sprite2D.h"
 #include "AtlasSprite2D.h"
 
@@ -10,7 +12,7 @@
 
 using namespace GameWorldConfig;
 
-SpriteLoader::SpriteLoader()
+SpriteLoader::SpriteLoader() : m_camera{}
 {
     auto resourceManager = ResourceManagers::GetInstance();
 
@@ -19,43 +21,53 @@ SpriteLoader::SpriteLoader()
     m_atlasSpriteShader = resourceManager->GetShader("AtlasTextureShader");
 }
 
+SpriteLoader::SpriteLoader(std::shared_ptr<Camera> camera) : SpriteLoader()
+{
+    m_camera = std::move(camera);
+}
+
 std::unique_ptr<Sprite2D> SpriteLoader::LoadTileSprite(TileType tileType, uint8_t tileDetails, Vector2Int position) const
 {
     auto resourceManager = ResourceManagers::GetInstance();
 
-    const char* texturePath = nullptr;
-    switch (tileType)
+    std::shared_ptr<Texture> tileTexture = ([&resourceManager, tileType, tileDetails]()
     {
-    case TileType::Wall:
-        if (tileDetails == 1)
+        switch (tileType)
         {
-            texturePath = SpriteResourceConfig::TileWall1;
+        case TileType::Wall:
+            if (tileDetails == 1)
+            {
+                return resourceManager->GetTexture(SpriteResourceConfig::TileWall1, true);
+            }
+            else
+            {
+                return resourceManager->GetTexture(SpriteResourceConfig::TileWall0, true);
+            }
+            break;
+        case TileType::Exit:
+            return resourceManager->GetTexture(SpriteResourceConfig::TileDoor, true);
+        default:
+            assert(false && "Unknown tile type");
+            return std::shared_ptr<Texture>{};
         }
-        else
-        {
-            texturePath = SpriteResourceConfig::TileWall0;
-        }
-        break;
-    case TileType::Exit:
-        texturePath = SpriteResourceConfig::TileDoor;
-        break;
-    default:
-        assert(false && "Unknown tile type");
-        break;
-    }
+    })();
 
-    std::shared_ptr<Texture> tileTexture = resourceManager->GetTexture(texturePath, true);
+
     std::unique_ptr<Sprite2D> tileSprite;
-
-    if (tileType == TileType::Exit)
+    auto atlasSize = SpriteTraits::GetAtlasSpriteSize(tileType, tileDetails);
+    if (atlasSize)
     {
-        tileSprite = std::make_unique<AtlasSprite2D>(m_spriteModel, m_atlasSpriteShader, tileTexture, Vector2Int(2, 1));
+        tileSprite = std::make_unique<AtlasSprite2D>(m_spriteModel, m_atlasSpriteShader, tileTexture, *atlasSize);
     }
     else
     {
         tileSprite = std::make_unique<Sprite2D>(m_spriteModel, m_spriteShader, tileTexture);
     }
 
+    if (m_camera != nullptr)
+    {
+        tileSprite->SetCamera(m_camera);
+    }
     tileSprite->SetSize(c_tileSize, c_tileSize);
     tileSprite->Set2DPosition(Vector2(position.x + c_tileAlign, position.y + c_tileAlign));
 
@@ -66,40 +78,39 @@ std::unique_ptr<Sprite2D> SpriteLoader::LoadEntitySprite(EntityType entityType, 
 {
     auto resourceManager = ResourceManagers::GetInstance();
 
-    std::unique_ptr<Sprite2D> entitySprite;
-
-    switch (entityType)
+    std::shared_ptr<Texture> entityTexture = ([&resourceManager, entityType]()
     {
-    case EntityType::Player:
-        entitySprite = std::make_unique<AtlasSprite2D>(
-            m_spriteModel,
-            m_atlasSpriteShader,
-            resourceManager->GetTexture(SpriteResourceConfig::PlayerEntity, true),
-            Vector2Int(6, 2));
-        break;
-    case EntityType::Rock:
-        entitySprite = std::make_unique<Sprite2D>(
-            m_spriteModel,
-            m_spriteShader,
-            resourceManager->GetTexture(SpriteResourceConfig::RockEntity, true));
-        break;
-    case EntityType::Box:
-        entitySprite = std::make_unique<Sprite2D>(
-            m_spriteModel,
-            m_spriteShader,
-            resourceManager->GetTexture(SpriteResourceConfig::BoxEntity, true));
-        break;
-    case EntityType::Key:
-        entitySprite = std::make_unique<Sprite2D>(
-            m_spriteModel,
-            m_spriteShader,
-            resourceManager->GetTexture(SpriteResourceConfig::KeyEntity, true));
-        break;
-    default:
-        assert(false && "Unknown entity type");
-        break;
+        switch (entityType)
+        {
+        case EntityType::Player:
+            return resourceManager->GetTexture(SpriteResourceConfig::PlayerEntity, true);
+        case EntityType::Rock:
+            return resourceManager->GetTexture(SpriteResourceConfig::RockEntity, true);
+        case EntityType::Box:
+            return resourceManager->GetTexture(SpriteResourceConfig::BoxEntity, true);
+        case EntityType::Key:
+            return resourceManager->GetTexture(SpriteResourceConfig::KeyEntity, true);
+        default:
+            assert(false && "Unknown entity type");
+            return std::shared_ptr<Texture>{};
+        }
+    })();
+
+    std::unique_ptr<Sprite2D> entitySprite;
+    auto atlasSize = SpriteTraits::GetAtlasSpriteSize(entityType);
+    if (atlasSize)
+    {
+        entitySprite = std::make_unique<AtlasSprite2D>(m_spriteModel, m_atlasSpriteShader, entityTexture, *atlasSize);
+    }
+    else
+    {
+        entitySprite = std::make_unique<Sprite2D>(m_spriteModel, m_spriteShader, entityTexture);
     }
 
+    if (m_camera != nullptr)
+    {
+        entitySprite->SetCamera(m_camera);
+    }
     entitySprite->SetSize(c_tileSize, c_tileSize);
     entitySprite->Set2DPosition(Vector2(position.x + c_tileAlign, position.y + c_tileAlign));
 

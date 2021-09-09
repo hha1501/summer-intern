@@ -256,6 +256,11 @@ Vector4 Vector4::operator * (GLfloat k)
 	return Vector4(x * k, y * k, z * k, w * k);
 }
 
+Vector4 Vector4::operator*(const Vector4& vector)
+{
+	return Vector4(x * vector.x, y * vector.y, z * vector.z, w * vector.z);
+}
+
 Vector4& Vector4::operator *= (GLfloat k)
 {
 	x *= k;
@@ -324,12 +329,20 @@ Matrix::Matrix(GLfloat val)
 	m[3][0] = val; m[3][1] = val; m[3][2] = val; m[3][3] = val;
 }
 
-Matrix::Matrix(const Matrix& mat)
+//Matrix::Matrix(const Matrix& mat)
+//{
+//	m[0][0] = mat.m[0][0]; m[0][1] = mat.m[0][1]; m[0][2] = mat.m[0][2]; m[0][3] = mat.m[0][3];
+//	m[1][0] = mat.m[1][0]; m[1][1] = mat.m[1][1]; m[1][2] = mat.m[1][2]; m[1][3] = mat.m[1][3];
+//	m[2][0] = mat.m[2][0]; m[2][1] = mat.m[2][1]; m[2][2] = mat.m[2][2]; m[2][3] = mat.m[2][3];
+//	m[3][0] = mat.m[3][0]; m[3][1] = mat.m[3][1]; m[3][2] = mat.m[3][2]; m[3][3] = mat.m[3][3];
+//}
+
+Matrix::Matrix(const Vector4& v1, const Vector4& v2, const Vector4& v3, const Vector4& v4)
 {
-	m[0][0] = mat.m[0][0]; m[0][1] = mat.m[0][1]; m[0][2] = mat.m[0][2]; m[0][3] = mat.m[0][3];
-	m[1][0] = mat.m[1][0]; m[1][1] = mat.m[1][1]; m[1][2] = mat.m[1][2]; m[1][3] = mat.m[1][3];
-	m[2][0] = mat.m[2][0]; m[2][1] = mat.m[2][1]; m[2][2] = mat.m[2][2]; m[2][3] = mat.m[2][3];
-	m[3][0] = mat.m[3][0]; m[3][1] = mat.m[3][1]; m[3][2] = mat.m[3][2]; m[3][3] = mat.m[3][3];
+	m[0][0] = v1.x; m[0][1] = v1.y; m[0][2] = v1.z; m[0][3] = v1.w;
+	m[1][0] = v2.x; m[1][1] = v2.y; m[1][2] = v2.z; m[1][3] = v2.w;
+	m[2][0] = v3.x; m[2][1] = v3.y; m[2][2] = v3.z; m[2][3] = v3.w;
+	m[3][0] = v4.x; m[3][1] = v4.y; m[3][2] = v4.z; m[3][3] = v4.w;
 }
 
 Matrix& Matrix::SetZero()
@@ -571,6 +584,131 @@ Matrix Matrix::Transpose()
 	res.m[2][0] = m[0][2]; res.m[2][1] = m[1][2]; res.m[2][2] = m[2][2]; res.m[2][3] = m[3][2];
 	res.m[3][0] = m[0][3]; res.m[3][1] = m[1][3]; res.m[3][2] = m[2][3]; res.m[3][3] = m[3][3];
 	return res;
+}
+
+Matrix Matrix::Inverse()
+{
+	Matrix ret;
+	float* inv = &(ret.m[0][0]);
+	float* pm = &(m[0][0]);
+
+	inv[0] = pm[5] * pm[10] * pm[15] -
+		pm[5] * pm[11] * pm[14] -
+		pm[9] * pm[6] * pm[15] +
+		pm[9] * pm[7] * pm[14] +
+		pm[13] * pm[6] * pm[11] -
+		pm[13] * pm[7] * pm[10];
+
+	inv[4] = -pm[4] * pm[10] * pm[15] +
+		pm[4] * pm[11] * pm[14] +
+		pm[8] * pm[6] * pm[15] -
+		pm[8] * pm[7] * pm[14] -
+		pm[12] * pm[6] * pm[11] +
+		pm[12] * pm[7] * pm[10];
+
+	inv[8] = pm[4] * pm[9] * pm[15] -
+		pm[4] * pm[11] * pm[13] -
+		pm[8] * pm[5] * pm[15] +
+		pm[8] * pm[7] * pm[13] +
+		pm[12] * pm[5] * pm[11] -
+		pm[12] * pm[7] * pm[9];
+
+	inv[12] = -pm[4] * pm[9] * pm[14] +
+		pm[4] * pm[10] * pm[13] +
+		pm[8] * pm[5] * pm[14] -
+		pm[8] * pm[6] * pm[13] -
+		pm[12] * pm[5] * pm[10] +
+		pm[12] * pm[6] * pm[9];
+
+	inv[1] = -pm[1] * pm[10] * pm[15] +
+		pm[1] * pm[11] * pm[14] +
+		pm[9] * pm[2] * pm[15] -
+		pm[9] * pm[3] * pm[14] -
+		pm[13] * pm[2] * pm[11] +
+		pm[13] * pm[3] * pm[10];
+
+	inv[5] = pm[0] * pm[10] * pm[15] -
+		pm[0] * pm[11] * pm[14] -
+		pm[8] * pm[2] * pm[15] +
+		pm[8] * pm[3] * pm[14] +
+		pm[12] * pm[2] * pm[11] -
+		pm[12] * pm[3] * pm[10];
+
+	inv[9] = -pm[0] * pm[9] * pm[15] +
+		pm[0] * pm[11] * pm[13] +
+		pm[8] * pm[1] * pm[15] -
+		pm[8] * pm[3] * pm[13] -
+		pm[12] * pm[1] * pm[11] +
+		pm[12] * pm[3] * pm[9];
+
+	inv[13] = pm[0] * pm[9] * pm[14] -
+		pm[0] * pm[10] * pm[13] -
+		pm[8] * pm[1] * pm[14] +
+		pm[8] * pm[2] * pm[13] +
+		pm[12] * pm[1] * pm[10] -
+		pm[12] * pm[2] * pm[9];
+
+	inv[2] = pm[1] * pm[6] * pm[15] -
+		pm[1] * pm[7] * pm[14] -
+		pm[5] * pm[2] * pm[15] +
+		pm[5] * pm[3] * pm[14] +
+		pm[13] * pm[2] * pm[7] -
+		pm[13] * pm[3] * pm[6];
+
+	inv[6] = -pm[0] * pm[6] * pm[15] +
+		pm[0] * pm[7] * pm[14] +
+		pm[4] * pm[2] * pm[15] -
+		pm[4] * pm[3] * pm[14] -
+		pm[12] * pm[2] * pm[7] +
+		pm[12] * pm[3] * pm[6];
+
+	inv[10] = pm[0] * pm[5] * pm[15] -
+		pm[0] * pm[7] * pm[13] -
+		pm[4] * pm[1] * pm[15] +
+		pm[4] * pm[3] * pm[13] +
+		pm[12] * pm[1] * pm[7] -
+		pm[12] * pm[3] * pm[5];
+
+	inv[14] = -pm[0] * pm[5] * pm[14] +
+		pm[0] * pm[6] * pm[13] +
+		pm[4] * pm[1] * pm[14] -
+		pm[4] * pm[2] * pm[13] -
+		pm[12] * pm[1] * pm[6] +
+		pm[12] * pm[2] * pm[5];
+
+	inv[3] = -pm[1] * pm[6] * pm[11] +
+		pm[1] * pm[7] * pm[10] +
+		pm[5] * pm[2] * pm[11] -
+		pm[5] * pm[3] * pm[10] -
+		pm[9] * pm[2] * pm[7] +
+		pm[9] * pm[3] * pm[6];
+
+	inv[7] = pm[0] * pm[6] * pm[11] -
+		pm[0] * pm[7] * pm[10] -
+		pm[4] * pm[2] * pm[11] +
+		pm[4] * pm[3] * pm[10] +
+		pm[8] * pm[2] * pm[7] -
+		pm[8] * pm[3] * pm[6];
+
+	inv[11] = -pm[0] * pm[5] * pm[11] +
+		pm[0] * pm[7] * pm[9] +
+		pm[4] * pm[1] * pm[11] -
+		pm[4] * pm[3] * pm[9] -
+		pm[8] * pm[1] * pm[7] +
+		pm[8] * pm[3] * pm[5];
+
+	inv[15] = pm[0] * pm[5] * pm[10] -
+		pm[0] * pm[6] * pm[9] -
+		pm[4] * pm[1] * pm[10] +
+		pm[4] * pm[2] * pm[9] +
+		pm[8] * pm[1] * pm[6] -
+		pm[8] * pm[2] * pm[5];
+
+	float det = pm[0] * inv[0] + pm[1] * inv[4] + pm[2] * inv[8] + pm[3] * inv[12];
+
+	det = 1.0f / det;
+
+	return ret * det;
 }
 
 Matrix Matrix::operator + (Matrix& mat)

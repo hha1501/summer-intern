@@ -120,3 +120,13 @@ void Sprite2D::SetSize(GLfloat width, GLfloat height)
 	m_scale = Vector3(m_width, m_height, 1.0f);
 	CalculateWorldMatrix();
 }
+
+std::unique_ptr<Sprite2D> Sprite2D::Clone() const
+{
+	std::unique_ptr<Sprite2D> newSprite = std::make_unique<Sprite2D>(m_pModel, m_pShader, m_pTexture);
+	newSprite->SetCamera(m_pCamera);
+	newSprite->SetSize(m_width, m_height);
+	newSprite->Set2DPosition(Vector2(m_position.x, m_position.y));
+
+	return newSprite;
+}

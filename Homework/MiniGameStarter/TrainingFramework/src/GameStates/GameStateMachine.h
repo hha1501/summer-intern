@@ -12,7 +12,8 @@ enum class StateType
 	STATE_MENU,
 	STATE_CREDIT,
 	STATE_LEVEL_SELECT,
-	STATE_PLAY
+	STATE_PLAY,
+	STATE_LEVEL_EDITOR
 };
 
 class GameStateMachine : public CSingleton<GameStateMachine>

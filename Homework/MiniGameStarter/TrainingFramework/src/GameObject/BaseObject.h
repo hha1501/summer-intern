@@ -33,14 +33,16 @@ public:
 	void SetColor(Vector4 color) { m_color = color; }
 
 	void SetCamera(std::shared_ptr<Camera> cam) { m_pCamera = cam; }
-
-	std::shared_ptr<Camera > GetCamera() { return m_pCamera; }
+	const std::shared_ptr<Camera>& GetCamera() const { return m_pCamera; }
 
 	void SetModels(std::shared_ptr<Model> model) { m_pModel = model; }
+	const std::shared_ptr<Model>& GetModels() const { return m_pModel; }
 
 	void SetShaders(std::shared_ptr<Shader> shader) { m_pShader = shader; }
+	const std::shared_ptr<Shader>& GetShaders() const { return m_pShader; }
 
 	void SetTexture(std::shared_ptr<Texture> texture) { m_pTexture = texture; }
+	const std::shared_ptr<Texture>& GetTexture() const { return m_pTexture; }
 
 	void SetPosition(Vector3 position) { m_position = position; }
 	Vector3 GetPosition() { return m_position; }
