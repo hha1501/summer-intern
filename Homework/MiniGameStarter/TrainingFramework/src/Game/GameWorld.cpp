@@ -32,6 +32,8 @@ void GameWorld::Init(int level)
     if (LoadMap(level))
     {
         m_worldState = WorldState::Playing;
+
+        MarkWorldAsChanged(false);
     }
     else
     {
@@ -352,13 +354,15 @@ bool GameWorld::CreateTiles(const SpriteLoader& spriteLoader, const std::vector<
 
 bool GameWorld::TryMoveEntityUnderGravity(Entity* entity, Vector2Int newPosition)
 {
+    GridSlot& currentGridSlot = m_mapLookup[GridPos2Index(entity->GetGridPosition())];
+
     // Check bounds
     if (newPosition.x < 0 || newPosition.x >= m_mapWidth || newPosition.y < 0 || newPosition.y >= m_mapHeight)
     {
-        return false;
+        OnEntityGoOutOfBounds(entity, newPosition, currentGridSlot);
+        return true;
     }
 
-    GridSlot& currentGridSlot = m_mapLookup[GridPos2Index(entity->GetGridPosition())];
     GridSlot& targetGridSlot = m_mapLookup[GridPos2Index(newPosition)];
 
     switch (entity->GetType())
@@ -598,14 +602,15 @@ bool GameWorld::TryMovePlayerUnderInput(InputDirection inputDirection)
 bool GameWorld::TryMoveBoxEntityUnderInput(Entity* entity, Vector2Int direction)
 {
     Vector2Int newPosition = entity->GetGridPosition() + direction;
+    GridSlot& currentGridSlot = m_mapLookup[GridPos2Index(entity->GetGridPosition())];
 
     // Check bounds
     if (newPosition.x < 0 || newPosition.x >= m_mapWidth || newPosition.y < 0 || newPosition.y >= m_mapHeight)
     {
-        return false;
+        OnEntityGoOutOfBounds(entity, newPosition, currentGridSlot);
+        return true;
     }
 
-    GridSlot& currentGridSlot = m_mapLookup[GridPos2Index(entity->GetGridPosition())];
     GridSlot& targetGridSlot = m_mapLookup[GridPos2Index(newPosition)];
 
     if (targetGridSlot.Type() == GridSlot::ContentType::Tile)
@@ -659,6 +664,22 @@ void GameWorld::OnPlayerPickupKey()
     {
         m_doorTile->SetAtlasCoord(Vector2Int(1, 0));
     }
+}
+
+void GameWorld::OnEntityGoOutOfBounds(Entity* entity, Vector2Int newPosition, GridSlot& currentGridSlot)
+{
+    MarkEntityAsRemoved(entity);
+
+    if (entity->GetType() == EntityType::Player)
+    {
+        m_player = nullptr;
+
+        m_gameOver = true;
+        m_worldState = WorldState::Ended;
+    }
+
+    // Update grid slots
+    currentGridSlot = GridSlot();
 }
 
 void GameWorld::MarkWorldAsChanged(bool byPlayerMovement)

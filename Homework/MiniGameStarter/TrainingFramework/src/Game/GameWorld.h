@@ -75,6 +75,7 @@ private:
     bool TryMoveBoxEntityUnderInput(Entity* entity, Vector2Int direction);
 
     void OnPlayerPickupKey();
+    void OnEntityGoOutOfBounds(Entity* entity, Vector2Int newPosition, GridSlot& currentGridSlot);
 
     void MarkWorldAsChanged(bool byPlayerMovement);
     void WorldStepOnce();
