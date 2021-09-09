@@ -306,6 +306,8 @@ bool GameWorld::AddEntity(const SpriteLoader& spriteLoader, EntityType entityTyp
             return false;
         }
     }
+
+    return true;
 }
 
 bool GameWorld::CreateTiles(const SpriteLoader& spriteLoader, const std::vector<uint8_t>& tiles)
