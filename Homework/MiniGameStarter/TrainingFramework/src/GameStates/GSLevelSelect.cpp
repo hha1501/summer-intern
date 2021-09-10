@@ -123,7 +123,7 @@ void GSLevelSelect::PlaceLevelButtons()
 
     constexpr float rowWidth = buttonSize * buttonPerRow + (horizontalSpacing - buttonSize) * (buttonPerRow - 1);
 
-    int buttonCount = 9;
+    int buttonCount = 12;
 
     const Vector2 firstButtonPosition = Vector2((float)Globals::screenWidth * 0.5f - rowWidth * 0.5f + buttonSize * 0.5f, 200.0f);
     Vector2 currentButtonPosition = firstButtonPosition;
@@ -141,8 +141,8 @@ void GSLevelSelect::PlaceLevelButtons()
 
         m_listButton.push_back(std::move(buttonLevel));
 
-        std::unique_ptr<Text> buttonText = std::make_unique<Text>(textShader, textFont, std::to_string(i), Vector4(1.0f, 1.0f, 1.0f, 1.0f), 1.7f);
-        buttonText->Set2DPosition(currentButtonPosition + Vector2(-12.0f, 15.0f));
+        std::unique_ptr<Text> buttonText = std::make_unique<Text>(textShader, textFont, std::to_string(i), Vector4(1.0f, 1.0f, 1.0f, 1.0f), 1.7f, 1.0f, TextAlign::CENTER);
+        buttonText->Set2DPosition(currentButtonPosition + Vector2(0.0f, 15.0f));
 
         m_listText.push_back(std::move(buttonText));
 

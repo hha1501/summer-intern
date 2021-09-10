@@ -39,6 +39,8 @@ void Text::Init()
 {
     SetCamera(Application::GetInstance()->GetCamera());
     CalculateWorldMatrix();
+
+    CalculateLineWidths();
 }
 
 void Text::Draw()
@@ -56,7 +58,6 @@ void Text::Draw()
         glVertexAttribPointer(iTempShaderVaribleGLID, 4, GL_FLOAT, GL_FALSE, 0, 0);
     }
 
-
     iTempShaderVaribleGLID = m_pShader->GetUniformLocation((char*)"u_color");
     if (iTempShaderVaribleGLID != -1)
         glUniform4fv(iTempShaderVaribleGLID, 1, &m_color.x);
@@ -73,25 +74,46 @@ void Text::Draw()
 
     float sx = 1.0f / Globals::screenWidth * m_scale.x;
     float sy = 1.0f / Globals::screenHeight * m_scale.y;
-    float x = m_position.x;
+
+    auto calculateInitialX = [this](int lineIndex)
+    {
+        switch (m_align)
+        {
+        case TextAlign::LEFT:
+            return m_position.x;
+        case TextAlign::RIGHT:
+            // TODO: Handle right alignment
+            return m_position.x;
+        case TextAlign::CENTER:
+            return m_position.x - m_lineWidths[lineIndex] * 0.5f;
+        default:
+            break;
+        }
+    };
+
+    int lineIndex = 0;
+
+    float x = calculateInitialX(lineIndex);
     float y = m_position.y;
 
     FT_GlyphSlot glyphSlot = m_font->GetGlyphSlot();
     for (const char* p = m_text.c_str(); *p; p++)
     {
-        if (FT_Load_Char(m_font->GetFace(), *p, FT_LOAD_RENDER))
-        {
-            continue;
-        }
-
         if (*p == '\n')
         {
-            x = m_position.x;
+            lineIndex++;
+            x = calculateInitialX(lineIndex);
             y -= glyphSlot->bitmap.rows * sy * m_lineSpacing;
 
             continue;
         }
 
+        if (FT_Load_Char(m_font->GetFace(), *p, FT_LOAD_RENDER))
+        {
+            continue;
+        }
+
+        glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
         glTexImage2D(
             GL_TEXTURE_2D,
             0,
@@ -104,17 +126,20 @@ void Text::Draw()
             glyphSlot->bitmap.buffer
         );
         float x2 = x + glyphSlot->bitmap_left * sx;
-        float y2 = -y - glyphSlot->bitmap_top * sy;
+        float y2 = y + glyphSlot->bitmap_top * sy;
         float w = glyphSlot->bitmap.width * sx;
         float h = glyphSlot->bitmap.rows * sy;
         GLfloat box[4][4] = {
-            {x2, -y2 , 0, 0},
-            {x2 + w, -y2 , 1, 0},
-            {x2, -y2 - h, 0, 1},
-            {x2 + w, -y2 - h, 1, 1},
+            {x2, y2 , 0, 0},
+            {x2 + w, y2 , 1, 0},
+            {x2, y2 - h, 0, 1},
+            {x2 + w, y2 - h, 1, 1},
         };
         glBufferData(GL_ARRAY_BUFFER, sizeof(box), box, GL_DYNAMIC_DRAW);
         glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+        // basic size measure is 64ths of a pixel
+        // divide by 2^6 to get size in pixels
         x += (glyphSlot->advance.x >> 6) * sx;
         y += (glyphSlot->advance.y >> 6) * sy;
     }
@@ -126,8 +151,6 @@ void Text::Update(GLfloat deltatime)
 {
 }
 
-
-
 void Text::SetFont(std::shared_ptr<Font> font)
 {
     m_font = font;
@@ -138,7 +161,44 @@ void Text::SetText(std::string text)
     m_text = text;
 }
 
+void Text::CalculateLineWidths()
+{
+    float sx = 1.0f / Globals::screenWidth * m_scale.x;
+    float sy = 1.0f / Globals::screenHeight * m_scale.y;
 
+    float lineWidth = 0.0f;
+
+    FT_GlyphSlot glyphSlot = m_font->GetGlyphSlot();
+
+    m_lineWidths.clear();
+
+    for (const char* p = m_text.c_str();; p++)
+    {
+        if (*p == '\0' || *p == '\n')
+        {
+            m_lineWidths.push_back(lineWidth);
+            lineWidth = 0.0f;
+
+            if (*p == '\0')
+            {
+                break;
+            }
+            else
+            {
+                continue;
+            }
+        }
+
+        if (FT_Load_Char(m_font->GetFace(), *p, FT_LOAD_NO_BITMAP))
+        {
+            continue;
+        }
+
+        // basic size measure is 64ths of a pixel
+        // divide by 2^6 to get size in pixels
+        lineWidth += (glyphSlot->advance.x >> 6) * sx;
+    }
+}
 
 Vector4 Text::EnumToVector(TextColor color)
 {
