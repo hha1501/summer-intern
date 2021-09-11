@@ -17,7 +17,7 @@ void Application::Init()
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	// Create a 2D camera
-	m_camera = std::make_shared<Camera>(0, 0, (float)Globals::screenWidth, 0, (float)Globals::screenHeight, -1.0f, 1.0f, 10.0f);
+	m_camera = std::make_shared<Camera>(0, 0.0f, (float)Globals::screenWidth, 0.0f, (float)Globals::screenHeight, -1.0f, 1.0f, 10.0f);
 
 	GameStateMachine::GetInstance()->PushState(StateType::STATE_INTRO);
 }

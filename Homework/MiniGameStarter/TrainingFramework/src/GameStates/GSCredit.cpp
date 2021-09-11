@@ -47,7 +47,7 @@ void GSCredit::Init()
     shader = ResourceManagers::GetInstance()->GetShader("TextShader");
     std::shared_ptr<Font> font = ResourceManagers::GetInstance()->GetFont("Puzzle-Tale-Pixel-Regular.ttf");
     m_textCredits = std::make_shared<Text>(shader, font, TextConstants::CREDITS, Vector4(0.0f, 0.0f, 0.0f, 255.0f) / 255.0f, 2.0f, 1.0f);
-    m_textCredits->Set2DPosition(150, Globals::screenHeight / 2 - 40);
+    m_textCredits->Set2DPosition(150.0f, (float)Globals::screenHeight / 2 - 40.0f);
 }
 
 void GSCredit::Exit()
