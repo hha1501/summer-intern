@@ -18,6 +18,11 @@ void GameButton::SetOnClick(std::function<void()> clickCallback)
 
 bool GameButton::HandleTouchEvents(GLint x, GLint y, bool bIsPressed)
 {
+	if (!m_isActive)
+	{
+		return false;
+	}
+
 	bool isHandled = false;
 	if (bIsPressed)
 	{

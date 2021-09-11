@@ -22,7 +22,7 @@ Model::Model(const std::string& fileName, GLuint type) : m_modelId(0), m_numIndi
 		GLfloat posX, posY, posZ, normX, normY, normZ, binormX, binormY, binormZ, tgtX, tgtY, tgtZ, uvX, uvY;
 		//read data from file
 		modelFile.seekg(0, modelFile.end);
-		size_t bufSize = modelFile.tellg();
+		size_t bufSize = (size_t)modelFile.tellg();
 		modelFile.seekg(0, modelFile.beg);
 
 		buffer = new char[bufSize + 1];

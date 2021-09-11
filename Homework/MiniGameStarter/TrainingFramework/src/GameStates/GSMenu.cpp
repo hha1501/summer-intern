@@ -14,7 +14,6 @@ GSMenu::~GSMenu()
 }
 
 
-
 void GSMenu::Init()
 {
     auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D.nfg");
@@ -24,7 +23,7 @@ void GSMenu::Init()
     auto shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
     m_background = std::make_shared<Sprite2D>(model, shader, texture);
     m_background->Set2DPosition(Globals::screenWidth / 2, Globals::screenHeight / 2);
-    m_background->SetSize(Globals::screenWidth, Globals::screenHeight);
+    m_background->SetSize((float)Globals::screenWidth, (float)Globals::screenHeight);
 
     // start button
     texture = ResourceManagers::GetInstance()->GetTexture("button_start.tga");
@@ -44,7 +43,7 @@ void GSMenu::Init()
     buttonTutorial->SetSize(150, 60);
     buttonTutorial->SetOnClick([]()
     {
-        // TODO: tutorial scene handler
+        GameStateMachine::GetInstance()->ChangeState(StateType::STATE_TUTORIAL);
     });
     m_listButton.push_back(buttonTutorial);
 
@@ -62,7 +61,7 @@ void GSMenu::Init()
     // exit button
     texture = ResourceManagers::GetInstance()->GetTexture("button_close.tga");
     std::shared_ptr<GameButton> buttonExit = std::make_shared<GameButton>(model, shader, texture);
-    buttonExit->Set2DPosition(Globals::screenWidth - 50, 50);
+    buttonExit->Set2DPosition(Globals::screenWidth - 30, 30);
     buttonExit->SetSize(50, 50);
     buttonExit->SetOnClick([]()
     {

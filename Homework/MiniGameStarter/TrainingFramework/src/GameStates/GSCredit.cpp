@@ -24,12 +24,12 @@ void GSCredit::Init()
     auto shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
     m_background = std::make_shared<Sprite2D>(model, shader, texture);
     m_background->Set2DPosition(Globals::screenWidth / 2, Globals::screenHeight / 2);
-    m_background->SetSize(Globals::screenWidth, Globals::screenHeight);
+    m_background->SetSize((float)Globals::screenWidth, (float)Globals::screenHeight);
 
     // close button
     texture = ResourceManagers::GetInstance()->GetTexture("button_close.tga");
     std::shared_ptr<GameButton> buttonClose = std::make_shared<GameButton>(model, shader, texture);
-    buttonClose->Set2DPosition(Globals::screenWidth - 50, 50);
+    buttonClose->Set2DPosition(Globals::screenWidth - 30, 30);
     buttonClose->SetSize(50, 50);
     buttonClose->SetOnClick([]()
     {

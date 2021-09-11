@@ -30,6 +30,11 @@ void Sprite3D::Init()
 
 void Sprite3D::Draw()
 {
+	if (!m_isActive)
+	{
+		return;
+	}
+
 	if (m_pCamera == nullptr) return;
 	glUseProgram(m_pShader->m_program);
 	glBindBuffer(GL_ARRAY_BUFFER, m_pModel->GetVertexObject());
@@ -93,8 +98,4 @@ void Sprite3D::Draw()
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_DEPTH_TEST);
-}
-
-void Sprite3D::Update(GLfloat deltatime)
-{
 }

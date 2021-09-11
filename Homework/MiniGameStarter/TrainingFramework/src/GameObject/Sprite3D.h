@@ -11,6 +11,5 @@ public:
 
 	void		Init() override;
 	void		Draw() override;
-	void		Update(GLfloat deltatime) override;
 };
 

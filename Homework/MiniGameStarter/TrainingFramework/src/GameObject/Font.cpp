@@ -1,8 +1,6 @@
 #include "Font.h"
 #include "GameConfig.h"
 
-
-
 Font::Font(const std::string& font)
 {
 	Init(font);

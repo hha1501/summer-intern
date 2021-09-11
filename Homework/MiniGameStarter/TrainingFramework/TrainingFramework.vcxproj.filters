@@ -85,6 +85,7 @@
     <ClCompile Include="src\Game\Editor\GameWorldEditor.cpp" />
     <ClCompile Include="src\GameStates\GSLevelEditor.cpp" />
     <ClCompile Include="src\ApplicationManagers\SoundManager.cpp" />
+    <ClCompile Include="src\GameStates\GSTutorial.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h">
@@ -175,6 +176,7 @@
     <ClInclude Include="src\Game\Editor\PaletteEntry.h" />
     <ClInclude Include="src\Game\SpriteUtils\SpriteTraits.h" />
     <ClInclude Include="src\ApplicationManagers\SoundManager.h" />
+    <ClInclude Include="src\GameStates\GSTutorial.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

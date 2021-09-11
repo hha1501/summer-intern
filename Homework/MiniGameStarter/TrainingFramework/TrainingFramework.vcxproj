@@ -327,6 +327,7 @@
     <ClCompile Include="src\GameStates\GSLevelSelect.cpp" />
     <ClCompile Include="src\GameStates\GSMenu.cpp" />
     <ClCompile Include="src\GameStates\GSPlay.cpp" />
+    <ClCompile Include="src\GameStates\GSTutorial.cpp" />
     <ClCompile Include="src\Game\Entity\BoxEntity.cpp" />
     <ClCompile Include="src\Game\Entity\Entity.cpp" />
     <ClCompile Include="src\Game\Entity\KeyEntity.cpp" />
@@ -364,6 +365,7 @@
     <ClInclude Include="src\GameStates\GSMenu.h" />
     <ClInclude Include="src\GameStates\GSPlay.h" />
     <ClInclude Include="src\Common\Vector2Int.h" />
+    <ClInclude Include="src\GameStates\GSTutorial.h" />
     <ClInclude Include="src\Game\Editor\EditorGridSlot.h" />
     <ClInclude Include="src\Game\Editor\PaletteEntry.h" />
     <ClInclude Include="src\Game\Entity\BoxEntity.h" />

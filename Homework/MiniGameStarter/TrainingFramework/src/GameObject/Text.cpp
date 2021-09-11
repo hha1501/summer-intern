@@ -45,6 +45,11 @@ void Text::Init()
 
 void Text::Draw()
 {
+    if (!m_isActive)
+    {
+        return;
+    }
+
     if (m_pCamera == nullptr) return;
     GLuint iTempShaderVaribleGLID = -1;
 
@@ -70,8 +75,6 @@ void Text::Draw()
         glUniform1i(iTempShaderVaribleGLID, 0);
     }
 
-    // TODO: implementing text alignment
-
     float sx = 1.0f / Globals::screenWidth * m_scale.x;
     float sy = 1.0f / Globals::screenHeight * m_scale.y;
 
@@ -87,7 +90,7 @@ void Text::Draw()
         case TextAlign::CENTER:
             return m_position.x - m_lineWidths[lineIndex] * 0.5f;
         default:
-            break;
+            return m_position.x;
         }
     };
 
@@ -99,17 +102,17 @@ void Text::Draw()
     FT_GlyphSlot glyphSlot = m_font->GetGlyphSlot();
     for (const char* p = m_text.c_str(); *p; p++)
     {
+        if (FT_Load_Char(m_font->GetFace(), *p, FT_LOAD_RENDER))
+        {
+            continue;
+        }
+
         if (*p == '\n')
         {
             lineIndex++;
             x = calculateInitialX(lineIndex);
             y -= glyphSlot->bitmap.rows * sy * m_lineSpacing;
 
-            continue;
-        }
-
-        if (FT_Load_Char(m_font->GetFace(), *p, FT_LOAD_RENDER))
-        {
             continue;
         }
 
@@ -145,10 +148,6 @@ void Text::Draw()
     }
     glBindBuffer(GL_ARRAY_BUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, 0);
-}
-
-void Text::Update(GLfloat deltatime)
-{
 }
 
 void Text::SetFont(std::shared_ptr<Font> font)

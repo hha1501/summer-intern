@@ -21,6 +21,11 @@ void AtlasSprite2D::Init()
 
 void AtlasSprite2D::Draw()
 {
+	if (!m_isActive)
+	{
+		return;
+	}
+
 	if (m_pCamera == nullptr) return;
 	glUseProgram(m_pShader->m_program);
 	glBindBuffer(GL_ARRAY_BUFFER, m_pModel->GetVertexObject());

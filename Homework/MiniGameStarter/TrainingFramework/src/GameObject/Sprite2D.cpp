@@ -35,6 +35,11 @@ void Sprite2D::Init()
 
 void Sprite2D::Draw()
 {
+	if (!m_isActive)
+	{
+		return;
+	}
+
 	if (m_pCamera == nullptr) return;
 	glUseProgram(m_pShader->m_program);
 	glBindBuffer(GL_ARRAY_BUFFER, m_pModel->GetVertexObject());
@@ -96,9 +101,6 @@ void Sprite2D::Draw()
 
 }
 
-void Sprite2D::Update(GLfloat deltatime)
-{
-}
 
 void Sprite2D::Set2DPosition(GLint x, GLint y)
 {

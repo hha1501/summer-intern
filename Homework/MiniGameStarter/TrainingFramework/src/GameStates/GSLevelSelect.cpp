@@ -10,7 +10,7 @@
 #include "GameButton.h"
 #include "Application.h"
 
-GSLevelSelect::GSLevelSelect() : m_inEditorMode(false)
+GSLevelSelect::GSLevelSelect() : m_inEditorMode(false), m_inputManager{}
 {
 }
 

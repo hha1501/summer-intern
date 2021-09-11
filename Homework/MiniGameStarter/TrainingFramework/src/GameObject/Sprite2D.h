@@ -17,7 +17,6 @@ public:
 
 	void		Init() override;
 	void		Draw() override;
-	void		Update(GLfloat deltatime) override;
 
 	void		Set2DPosition(GLint x, GLint y);
 	void		Set2DPosition(Vector2 position);
