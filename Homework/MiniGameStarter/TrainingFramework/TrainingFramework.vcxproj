@@ -141,7 +141,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Nvidia|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Include\Nvidia;$(SolutionDir)\freetype\include;$(SolutionDir)\Utilities\src;$(projectdir)\src\GameManager;$(projectdir)\src\GameObject;$(projectdir)\src\GameState;$(projectdir)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\soloud20200207\include;$(SolutionDir)Include\Nvidia;$(SolutionDir)freetype\include;$(SolutionDir)Utilities\src;$(projectdir)src\GameManager;$(projectdir)src\GameObject;$(projectdir)src\GameState;$(projectdir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -301,9 +301,13 @@
       <Project>{0d44529e-f7dd-4454-8ead-9afd857f53b4}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
+    <ProjectReference Include="..\vendor\soloud20200207\build\vs2019\SoloudStatic.vcxproj">
+      <Project>{83540317-6fb7-92bb-183d-cb71047f5e3e}</Project>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\ApplicationManagers\SoundManager.cpp" />
     <ClCompile Include="src\GameManager\ResourceManagers.cpp" />
     <ClCompile Include="src\GameObject\AtlasSprite2D.cpp" />
     <ClCompile Include="src\GameObject\Font.cpp" />
@@ -336,6 +340,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
+    <ClInclude Include="src\ApplicationManagers\SoundManager.h" />
     <ClInclude Include="src\GameConfig.h" />
     <ClInclude Include="src\GameManager\ResourceManagers.h" />
     <ClInclude Include="src\GameManager\Singleton.h" />
@@ -377,9 +382,9 @@
     <ClInclude Include="src\Game\SpriteUtils\SpriteTraits.h" />
     <ClInclude Include="src\Game\Tile\TileType.h" />
     <ClInclude Include="src\TextConstants.h" />
-    <ClInclude Include="src\Utils\InputManager.h" />
-    <ClInclude Include="src\Utils\KeyCode.h" />
-    <ClInclude Include="src\Utils\SessionManager.h" />
+    <ClInclude Include="src\ApplicationManagers\InputManager.h" />
+    <ClInclude Include="src\ApplicationManagers\KeyCode.h" />
+    <ClInclude Include="src\ApplicationManagers\SessionManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

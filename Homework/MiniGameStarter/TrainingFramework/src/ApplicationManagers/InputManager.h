@@ -24,6 +24,7 @@ public:
 
     void OnKeyEvent(unsigned char key, bool pressed)
     {
+        printf("Key pressed\n");
         constexpr uint32_t one = (uint32_t)1;
         const int keyShiftAmount = (int)CharToKeyCode(key);
         const uint32_t mask = one << keyShiftAmount;

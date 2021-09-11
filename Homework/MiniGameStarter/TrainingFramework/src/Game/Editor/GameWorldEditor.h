@@ -2,7 +2,7 @@
 
 #include "Camera.h"
 #include "Common/Vector2Int.h"
-#include "Utils/InputManager.h"
+#include "ApplicationManagers/InputManager.h"
 
 #include "PaletteEntry.h"
 

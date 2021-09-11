@@ -15,7 +15,7 @@
 
 constexpr float c_victoryWaitTime = 2.0f;
 
-GSPlay::GSPlay() : m_inVictoryScreen(false), m_victoryWaitTime{}
+GSPlay::GSPlay() : m_state(State::Play), m_victoryWaitTime{}
 {
     m_inputManager = Application::GetInstance()->GetInputManager();
     m_sessionManager = Application::GetInstance()->GetSessionManager();
@@ -101,6 +101,66 @@ void GSPlay::Update(float deltaTime)
         it->Update(deltaTime);
     }
 
+    switch (m_state)
+    {
+    case GSPlay::State::Play:
+        OnPlayStateUpdate(deltaTime);
+        break;
+    case GSPlay::State::Victory:
+        OnVictoryStateUpdate(deltaTime);
+        break;
+    default:
+        break;
+    }
+}
+
+void GSPlay::Draw()
+{
+    m_background->Draw();
+
+    m_gameWorld.Draw();
+
+    for (auto& it : m_listButton)
+    {
+        it->Draw();
+    }
+
+    if (m_state == State::Victory)
+    {
+        m_victoryPanel->Draw();
+    }
+}
+
+void GSPlay::RestartGameWorld()
+{
+    if (m_state != State::Play)
+    {
+        return;
+    }
+
+    m_gameWorld = GameWorld();
+    m_gameWorld.Init(m_sessionManager->GetSelectedLevel());
+}
+
+void GSPlay::OnVictory()
+{
+    m_state = State::Victory;
+
+    auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D.nfg");
+    auto shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
+
+    // victory panel
+    auto texture = ResourceManagers::GetInstance()->GetTexture("panel_victory.tga");
+    m_victoryPanel = std::make_unique<Sprite2D>(model, shader, texture);
+    m_victoryPanel->Set2DPosition(Vector2((float)Globals::screenWidth / 2, (float)Globals::screenHeight / 2));
+    m_victoryPanel->SetSize(450.0f, 180.0f);
+
+    // play complete sound
+    Application::GetInstance()->GetSoundManager()->PlayCompleteSound();
+}
+
+void GSPlay::OnPlayStateUpdate(float deltaTime)
+{
     if (m_inputManager->KeyDown(KeyCode::G))
     {
         m_gameWorld.ToggleGravitySelection();
@@ -130,64 +190,19 @@ void GSPlay::Update(float deltaTime)
 
     m_gameWorld.Update(deltaTime);
 
-    if (!m_inVictoryScreen)
+    if (m_gameWorld.IsVictory())
     {
-        if (m_gameWorld.IsVictory())
-        {
-            OnVictory();
-        }
-    }
-    else
-    {
-        m_victoryWaitTime += deltaTime;
-        if (m_victoryWaitTime >= c_victoryWaitTime)
-        {
-            m_inVictoryScreen = false;
-            GameStateMachine::GetInstance()->PopState();
-        }
-    }
-
-    // TODO: Handle game over
-}
-
-void GSPlay::Draw()
-{
-    m_background->Draw();
-
-    m_gameWorld.Draw();
-
-    for (auto& it : m_listButton)
-    {
-        it->Draw();
-    }
-
-    if (m_inVictoryScreen)
-    {
-        m_victoryPanel->Draw();
+        OnVictory();
     }
 }
 
-void GSPlay::RestartGameWorld()
+void GSPlay::OnVictoryStateUpdate(float deltaTime)
 {
-    if (m_inVictoryScreen)
+    m_victoryWaitTime += deltaTime;
+    if (m_victoryWaitTime >= c_victoryWaitTime)
     {
-        return;
+        GameStateMachine::GetInstance()->PopState();
     }
 
-    m_gameWorld = GameWorld();
-    m_gameWorld.Init(m_sessionManager->GetSelectedLevel());
-}
-
-void GSPlay::OnVictory()
-{
-    auto model = ResourceManagers::GetInstance()->GetModel("Sprite2D.nfg");
-    auto shader = ResourceManagers::GetInstance()->GetShader("TextureShader");
-
-    // victory panel
-    auto texture = ResourceManagers::GetInstance()->GetTexture("panel_victory.tga");
-    m_victoryPanel = std::make_unique<Sprite2D>(model, shader, texture);
-    m_victoryPanel->Set2DPosition(Vector2((float)Globals::screenWidth / 2, (float)Globals::screenHeight / 2));
-    m_victoryPanel->SetSize(450.0f, 180.0f);
-
-    m_inVictoryScreen = true;
+    m_gameWorld.Update(deltaTime);
 }

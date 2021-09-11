@@ -3,8 +3,8 @@
 
 #include "../Game/Editor/GameWorldEditor.h"
 
-#include "../Utils/InputManager.h"
-#include "../Utils/SessionManager.h"
+#include "ApplicationManagers/InputManager.h"
+#include "ApplicationManagers/SessionManager.h"
 
 class Sprite2D;
 class Sprite3D;

@@ -3,8 +3,9 @@
 #include "GameConfig.h"
 #include "Camera.h"
 
-#include "Utils/InputManager.h"
-#include "Utils/SessionManager.h"
+#include "ApplicationManagers/InputManager.h"
+#include "ApplicationManagers/SessionManager.h"
+#include "ApplicationManagers/SoundManager.h"
 
 class Application : public CSingleton<Application>
 {
@@ -33,9 +34,15 @@ public:
 		return &m_sessionManager;
 	}
 
+	SoundManager* GetSoundManager()
+	{
+		return &m_soundManager;
+	}
+
 private:
 	std::shared_ptr<Camera> m_camera;
 	InputManager m_inputManager;
 	SessionManager m_sessionManager;
+	SoundManager m_soundManager;
 };
 

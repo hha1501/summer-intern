@@ -3,17 +3,23 @@
 
 #include "../Game/GameWorld.h"
 
-#include "../Utils/InputManager.h"
-#include "../Utils/SessionManager.h"
+#include "ApplicationManagers/InputManager.h"
+#include "ApplicationManagers/SessionManager.h"
 
 class Sprite2D;
 class Sprite3D;
 class Text;
 class GameButton;
 
-class GSPlay :
-    public GameStateBase
+class GSPlay : public GameStateBase
 {
+private:
+    enum class State
+    {
+        Play,
+        Victory
+    };
+
 public:
     GSPlay();
     ~GSPlay() = default;
@@ -35,6 +41,9 @@ private:
     void RestartGameWorld();
     void OnVictory();
 
+    void OnPlayStateUpdate(float deltaTime);
+    void OnVictoryStateUpdate(float deltaTime);
+
 private:
     std::unique_ptr<Sprite2D> m_background;
     std::vector<std::unique_ptr<GameButton>> m_listButton;
@@ -45,7 +54,7 @@ private:
     const InputManager* m_inputManager;
     const SessionManager* m_sessionManager;
 
-    bool m_inVictoryScreen;
+    State m_state;
     float m_victoryWaitTime;
 };
 

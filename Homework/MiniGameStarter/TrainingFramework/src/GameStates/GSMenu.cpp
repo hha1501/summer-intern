@@ -1,6 +1,8 @@
 #include "GSMenu.h"
 #include "Camera.h"
 
+#include "Application.h"
+
 GSMenu::GSMenu() : GameStateBase(StateType::STATE_MENU),
 m_background(nullptr), m_listButton(std::list<std::shared_ptr<GameButton>>{}), m_textGameName(nullptr)
 {
@@ -73,6 +75,9 @@ void GSMenu::Init()
     std::shared_ptr<Font> font = ResourceManagers::GetInstance()->GetFont("Gamer.ttf");
     m_textGameName = std::make_shared<Text>(shader, font, "an-gravi-ti", Vector4(255.0f, 93.0f, 33.0f, 255.0f) / 255.0f, 3.0f);
     m_textGameName->Set2DPosition((float)Globals::screenWidth / 2 - 130, (float)Globals::screenHeight / 2 - 100);
+
+    // play background sound
+    Application::GetInstance()->GetSoundManager()->PlayBackgroundSound();
 }
 
 void GSMenu::Exit()

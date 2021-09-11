@@ -84,6 +84,7 @@
     <ClCompile Include="src\GameObject\AtlasSprite2D.cpp" />
     <ClCompile Include="src\Game\Editor\GameWorldEditor.cpp" />
     <ClCompile Include="src\GameStates\GSLevelEditor.cpp" />
+    <ClCompile Include="src\ApplicationManagers\SoundManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h">
@@ -161,10 +162,10 @@
     <ClInclude Include="src\Game\Entity\BoxEntity.h" />
     <ClInclude Include="src\Game\Entity\RockEntity.h" />
     <ClInclude Include="src\Game\Entity\KeyEntity.h" />
-    <ClInclude Include="src\Utils\InputManager.h" />
-    <ClInclude Include="src\Utils\KeyCode.h" />
+    <ClInclude Include="src\ApplicationManagers\InputManager.h" />
+    <ClInclude Include="src\ApplicationManagers\KeyCode.h" />
     <ClInclude Include="src\GameStates\GSLevelSelect.h" />
-    <ClInclude Include="src\Utils\SessionManager.h" />
+    <ClInclude Include="src\ApplicationManagers\SessionManager.h" />
     <ClInclude Include="src\GameObject\AtlasSprite2D.h" />
     <ClInclude Include="src\Game\Editor\GameWorldEditor.h" />
     <ClInclude Include="src\Game\SpriteUtils\SpriteResourceConfig.h" />
@@ -173,6 +174,7 @@
     <ClInclude Include="src\Game\Editor\EditorGridSlot.h" />
     <ClInclude Include="src\Game\Editor\PaletteEntry.h" />
     <ClInclude Include="src\Game\SpriteUtils\SpriteTraits.h" />
+    <ClInclude Include="src\ApplicationManagers\SoundManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
