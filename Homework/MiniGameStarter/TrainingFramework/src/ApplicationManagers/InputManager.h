@@ -24,18 +24,23 @@ public:
 
     void OnKeyEvent(unsigned char key, bool pressed)
     {
-        printf("Key pressed\n");
         constexpr uint32_t one = (uint32_t)1;
         const int keyShiftAmount = (int)CharToKeyCode(key);
         const uint32_t mask = one << keyShiftAmount;
 
         if (pressed)
         {
+            // Set down state
+            //
+            //	    ____ 1 ____         m_keyDownBitSet | mask
+            // ^    0000 k 0000         m_keyHoldingBitSet & mask
+            // =    ____~k ____         m_keyHoldingBitSet with pressed key bit set to the opposite of
+            //                          whatever state it was last frame
+            //
+            m_keyDownBitSet = ((m_keyDownBitSet | mask) ^ (m_keyHoldingBitSet & mask));
+
             // Set holding state
             m_keyHoldingBitSet |= mask;
-
-            // Set down state
-            m_keyDownBitSet |= mask;
 
             // Clear up state
             m_keyUpBitSet &= ~mask;
