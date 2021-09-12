@@ -8,6 +8,8 @@
 
 #include "ResourceManagers.h"
 
+#include "Application.h"
+
 #include <array>
 #include <algorithm>
 #include <assert.h>
@@ -21,7 +23,7 @@ namespace Agvt
 
     GameWorld::GameWorld() : m_worldCamera{}, m_tiles{}, m_entities{}, m_keys{}, m_doorTile{}, m_player{},
         m_keysToCollectCount{}, m_gameOver(false), m_playerExited(false),
-        m_currentGravityDirection{}, m_worldState(WorldState::Invalid), m_updateTimer{},
+        m_currentGravityDirection{},
         m_mapWidth{}, m_mapHeight{}, m_mapLookup{}, m_keyLookup{}, m_entityUpdateQueue{}, m_entitiesListChanged(false), m_keysListChanged(false)
     {
     }
@@ -29,100 +31,15 @@ namespace Agvt
     void GameWorld::Init(int level)
     {
         m_worldCamera = std::make_shared<Camera>(0, 0.0f, c_mapWidth, c_mapHeight, 0.0f, -1.0f, 1.0f, 0.0f);
+        m_stateMachine.Init(this, Application::GetInstance()->GetInputManager());
 
         if (LoadMap(level))
         {
-            m_worldState = WorldState::Playing;
-
-            MarkWorldAsChanged(false);
+            m_stateMachine.ChangeState(StateType::Updating);
         }
         else
         {
             LOGI("Invalid map construction\n");
-        }
-    }
-
-    void GameWorld::ToggleGravitySelection()
-    {
-        if (IsInvalid())
-        {
-            return;
-        }
-
-        if (m_worldState == WorldState::Playing)
-        {
-            m_worldState = WorldState::GravitySelecting;
-
-            m_player->SetAnimationState(PlayerEntity::AnimationState::GravityStop);
-        }
-        else if (m_worldState == WorldState::GravitySelecting)
-        {
-            MarkWorldAsChanged(false);
-        }
-    }
-
-    void GameWorld::SetGravity(GravityDirection gravityDirection)
-    {
-        if (IsInvalid())
-        {
-            return;
-        }
-
-        if (m_worldState != WorldState::GravitySelecting)
-        {
-            return;
-        }
-
-        if (gravityDirection == GravityDirection::Down)
-        {
-            return;
-        }
-
-        size_t gravityIndex = (size_t)m_currentGravityDirection + (size_t)gravityDirection;
-        if (gravityIndex >= 4)
-        {
-            gravityIndex -= 4;
-        }
-
-        m_currentGravityDirection = (GravityDirection)gravityIndex;
-
-        constexpr std::array<float, 4> directionToZAngle
-        {
-            0.0f,
-            PI * 1.5f,
-            PI * 1.0f,
-            PI * 0.5f
-        };
-
-        float zAngle = directionToZAngle[(size_t)m_currentGravityDirection];
-
-        // Rotate camera
-        m_worldCamera->BeginUpdate()
-            .SetRotationZ(-zAngle)
-            .ApplyChanges();
-
-        // Rotate entities
-        for (auto& entity : m_entities)
-        {
-            entity->SetRotation(Vector3(0, 0, zAngle));
-        }
-    }
-
-    void GameWorld::MovePlayer(InputDirection direction)
-    {
-        if (IsInvalid())
-        {
-            return;
-        }
-
-        if (m_worldState != WorldState::Playing)
-        {
-            return;
-        }
-
-        if (TryMovePlayerUnderInput(direction))
-        {
-            MarkWorldAsChanged(true);
         }
     }
 
@@ -133,16 +50,7 @@ namespace Agvt
             return;
         }
 
-        if (m_worldState == WorldState::Updating)
-        {
-            m_updateTimer += deltaTime;
-            if (m_updateTimer >= c_updateDelayTime)
-            {
-                WorldStepOnce();
-
-                m_updateTimer -= c_updateDelayTime;
-            }
-        }
+        m_stateMachine.Update(deltaTime);
 
         if (!m_gameOver)
         {
@@ -179,11 +87,6 @@ namespace Agvt
         }
     }
 
-    bool GameWorld::IsInGravtitySelection() const
-    {
-        return m_worldState == WorldState::GravitySelecting;
-    }
-
     bool GameWorld::IsGameOver() const
     {
         return m_gameOver;
@@ -196,7 +99,37 @@ namespace Agvt
 
     bool GameWorld::IsInvalid() const
     {
-        return m_worldState == WorldState::Invalid;
+        return m_stateMachine.GetCurrentStateType() == StateType::Invalid;
+    }
+
+    void GameWorld::SetGravity(GravityDirection gravityDirection)
+    {
+        if (gravityDirection == GravityDirection::Down)
+        {
+            return;
+        }
+
+        size_t gravityIndex = (size_t)m_currentGravityDirection + (size_t)gravityDirection;
+        if (gravityIndex >= 4)
+        {
+            gravityIndex -= 4;
+        }
+
+        m_currentGravityDirection = (GravityDirection)gravityIndex;
+    }
+
+    void GameWorld::SetWorldRotation(float angle)
+    {
+        // Rotate camera
+        m_worldCamera->BeginUpdate()
+            .SetRotationZ(-angle)
+            .ApplyChanges();
+
+        // Rotate entities
+        for (auto& entity : m_entities)
+        {
+            entity->SetRotation(Vector3(0, 0, angle));
+        }
     }
 
     bool GameWorld::LoadMap(int id)
@@ -485,7 +418,6 @@ namespace Agvt
             m_player = nullptr;
 
             m_gameOver = true;
-            m_worldState = WorldState::Ended;
 
             // Update grid slots
             currentGridSlot = GridSlot();
@@ -509,9 +441,9 @@ namespace Agvt
         constexpr std::array<Vector2Int, 4> gravityIndexToLeftVector
         {
             Vector2Int::Left(),
-            Vector2Int::Up(),
+            Vector2Int::Down(),
             Vector2Int::Right(),
-            Vector2Int::Down()
+            Vector2Int::Up()
         };
 
         Vector2Int leftVector = gravityIndexToLeftVector[(size_t)m_currentGravityDirection];
@@ -536,7 +468,6 @@ namespace Agvt
             {
                 currentGridSlot = GridSlot();
                 m_playerExited = true;
-                m_worldState = WorldState::Ended;
 
                 // Update position
                 entity->SetPosition(newPosition);
@@ -676,18 +607,14 @@ namespace Agvt
             m_player = nullptr;
 
             m_gameOver = true;
-            m_worldState = WorldState::Ended;
         }
 
         // Update grid slots
         currentGridSlot = GridSlot();
     }
 
-    void GameWorld::MarkWorldAsChanged(bool byPlayerMovement)
+    void GameWorld::MarkWorldAsChanged()
     {
-        m_worldState = WorldState::Updating;
-        m_updateTimer = byPlayerMovement ? c_updateDelayAfterPlayerMovement : 0.0f;
-
         // Queue up entities to be updated
         // List of entities will be sorted according to vertical component of gravity vector
         m_entityUpdateQueue.clear();
@@ -722,17 +649,6 @@ namespace Agvt
                 return left->GetGridPosition().x > right->GetGridPosition().x;
             });
             break;
-        }
-    }
-
-    void GameWorld::WorldStepOnce()
-    {
-        bool needToUpdate = ApplyGravity();
-
-        if (!needToUpdate)
-        {
-            ProcessEntityRemovePendingList();
-            m_worldState = WorldState::Playing;
         }
     }
 
@@ -806,9 +722,9 @@ namespace Agvt
         constexpr std::array<Vector2Int, 4> directionToVector
         {
             Vector2Int::Down(),
-            Vector2Int::Left(),
+            Vector2Int::Right(),
             Vector2Int::Up(),
-            Vector2Int::Right()
+            Vector2Int::Left()
         };
 
         return directionToVector[(size_t)gravityDirection];

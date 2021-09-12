@@ -337,6 +337,13 @@
     <ClCompile Include="src\Game\Editor\GameWorldEditor.cpp" />
     <ClCompile Include="src\Game\Map\GameMap.cpp" />
     <ClCompile Include="src\Game\SpriteUtils\SpriteLoader.cpp" />
+    <ClCompile Include="src\Game\StateMachine\EndState.cpp" />
+    <ClCompile Include="src\Game\StateMachine\GravitySelectState.cpp" />
+    <ClCompile Include="src\Game\StateMachine\PlayState.cpp" />
+    <ClCompile Include="src\Game\StateMachine\InvalidState.cpp" />
+    <ClCompile Include="src\Game\StateMachine\StateBase.cpp" />
+    <ClCompile Include="src\Game\StateMachine\StateMachine.cpp" />
+    <ClCompile Include="src\Game\StateMachine\UpdateState.cpp" />
     <ClCompile Include="src\TrainingFramework.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -382,6 +389,14 @@
     <ClInclude Include="src\Game\SpriteUtils\SpriteResourceConfig.h" />
     <ClInclude Include="src\Game\SpriteUtils\SpriteLoader.h" />
     <ClInclude Include="src\Game\SpriteUtils\SpriteTraits.h" />
+    <ClInclude Include="src\Game\StateMachine\EndState.h" />
+    <ClInclude Include="src\Game\StateMachine\GravitySelectState.h" />
+    <ClInclude Include="src\Game\StateMachine\PlayState.h" />
+    <ClInclude Include="src\Game\StateMachine\InvalidState.h" />
+    <ClInclude Include="src\Game\StateMachine\StateBase.h" />
+    <ClInclude Include="src\Game\StateMachine\StateMachine.h" />
+    <ClInclude Include="src\Game\StateMachine\StateType.h" />
+    <ClInclude Include="src\Game\StateMachine\UpdateState.h" />
     <ClInclude Include="src\Game\Tile\TileType.h" />
     <ClInclude Include="src\TextConstants.h" />
     <ClInclude Include="src\ApplicationManagers\InputManager.h" />

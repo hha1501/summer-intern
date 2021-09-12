@@ -12,6 +12,8 @@
 
 #include "SpriteUtils/SpriteLoader.h"
 
+#include "StateMachine/StateMachine.h"
+
 #include <memory>
 #include <vector>
 #include <unordered_map>
@@ -24,9 +26,9 @@ namespace Agvt
         enum class GravityDirection
         {
             Down = 0,
-            Left = 1,
+            Right = 1,
             Up = 2,
-            Right = 3
+            Left = 3
         };
 
         enum class InputDirection
@@ -35,33 +37,28 @@ namespace Agvt
             Right = 1
         };
 
-        enum class WorldState
-        {
-            Invalid,
-            Playing,
-            GravitySelecting,
-            Updating,
-            Ended
-        };
-
     public:
         GameWorld();
 
         void Init(int level);
 
-        void ToggleGravitySelection();
-        void SetGravity(GravityDirection gravityDirection);
-        void MovePlayer(InputDirection direction);
-
         void Update(float deltaTime);
         void Draw();
-
-        bool IsInGravtitySelection() const;
 
         bool IsGameOver() const;
         bool IsVictory() const;
 
         bool IsInvalid() const;
+
+    private:
+        void SetGravity(GravityDirection gravityDirection);
+        void SetWorldRotation(float angle);
+
+        friend class InvalidState;
+        friend class PlayState;
+        friend class GravitySelectState;
+        friend class UpdateState;
+        friend class EndState;
 
     private:
         bool LoadMap(int id);
@@ -79,8 +76,7 @@ namespace Agvt
         void OnPlayerPickupKey();
         void OnEntityGoOutOfBounds(Entity* entity, Vector2Int newPosition, GridSlot& currentGridSlot);
 
-        void MarkWorldAsChanged(bool byPlayerMovement);
-        void WorldStepOnce();
+        void MarkWorldAsChanged();
         bool ApplyGravity();
 
         void MarkEntityAsRemoved(Entity* entity);
@@ -105,8 +101,6 @@ namespace Agvt
 
         GravityDirection m_currentGravityDirection;
 
-        WorldState m_worldState;
-        float m_updateTimer;
 
         uint8_t m_mapWidth;
         uint8_t m_mapHeight;
@@ -116,5 +110,7 @@ namespace Agvt
         std::vector<Entity*> m_entityUpdateQueue;
         bool m_entitiesListChanged;
         bool m_keysListChanged;
+
+        StateMachine m_stateMachine;
     };
 }

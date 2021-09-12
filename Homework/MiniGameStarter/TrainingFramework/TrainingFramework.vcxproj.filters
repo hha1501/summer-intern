@@ -86,6 +86,13 @@
     <ClCompile Include="src\GameStates\GSLevelEditor.cpp" />
     <ClCompile Include="src\ApplicationManagers\SoundManager.cpp" />
     <ClCompile Include="src\GameStates\GSTutorial.cpp" />
+    <ClCompile Include="src\Game\StateMachine\StateMachine.cpp" />
+    <ClCompile Include="src\Game\StateMachine\StateBase.cpp" />
+    <ClCompile Include="src\Game\StateMachine\InvalidState.cpp" />
+    <ClCompile Include="src\Game\StateMachine\PlayState.cpp" />
+    <ClCompile Include="src\Game\StateMachine\GravitySelectState.cpp" />
+    <ClCompile Include="src\Game\StateMachine\UpdateState.cpp" />
+    <ClCompile Include="src\Game\StateMachine\EndState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h">
@@ -177,6 +184,14 @@
     <ClInclude Include="src\Game\SpriteUtils\SpriteTraits.h" />
     <ClInclude Include="src\ApplicationManagers\SoundManager.h" />
     <ClInclude Include="src\GameStates\GSTutorial.h" />
+    <ClInclude Include="src\Game\StateMachine\StateMachine.h" />
+    <ClInclude Include="src\Game\StateMachine\StateType.h" />
+    <ClInclude Include="src\Game\StateMachine\StateBase.h" />
+    <ClInclude Include="src\Game\StateMachine\InvalidState.h" />
+    <ClInclude Include="src\Game\StateMachine\PlayState.h" />
+    <ClInclude Include="src\Game\StateMachine\GravitySelectState.h" />
+    <ClInclude Include="src\Game\StateMachine\UpdateState.h" />
+    <ClInclude Include="src\Game\StateMachine\EndState.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

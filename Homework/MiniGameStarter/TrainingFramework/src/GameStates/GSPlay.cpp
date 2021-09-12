@@ -161,33 +161,6 @@ void GSPlay::OnVictory()
 
 void GSPlay::OnPlayStateUpdate(float deltaTime)
 {
-    if (m_inputManager->KeyDown(KeyCode::G))
-    {
-        m_gameWorld.ToggleGravitySelection();
-    }
-    else if (m_inputManager->KeyDown(KeyCode::LEFT))
-    {
-        if (m_gameWorld.IsInGravtitySelection())
-        {
-            m_gameWorld.SetGravity(Agvt::GameWorld::GravityDirection::Left);
-        }
-        else
-        {
-            m_gameWorld.MovePlayer(Agvt::GameWorld::InputDirection::Left);
-        }
-    }
-    else if (m_inputManager->KeyDown(KeyCode::RIGHT))
-    {
-        if (m_gameWorld.IsInGravtitySelection())
-        {
-            m_gameWorld.SetGravity(Agvt::GameWorld::GravityDirection::Right);
-        }
-        else
-        {
-            m_gameWorld.MovePlayer(Agvt::GameWorld::InputDirection::Right);
-        }
-    }
-
     m_gameWorld.Update(deltaTime);
 
     if (m_gameWorld.IsVictory())
