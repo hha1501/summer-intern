@@ -40,6 +40,7 @@ public:
 private:
     void RestartGameWorld();
     void OnVictory();
+    void OnFail();
 
     void OnPlayStateUpdate(float deltaTime);
     void OnVictoryStateUpdate(float deltaTime);

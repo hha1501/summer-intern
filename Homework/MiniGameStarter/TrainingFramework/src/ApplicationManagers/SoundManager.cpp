@@ -4,8 +4,10 @@
 
 #include <soloud_error.h>
 
-constexpr const char* c_backgroundTrackFile = "..\\Data\\Sounds\\Sun Tribe.ogg";
-constexpr const char* c_completeTrackFile = "..\\Data\\Sounds\\complete.ogg";
+constexpr const char* c_backgroundTrackFile = "..\\Data\\Sounds\\Komiku-School.mp3";
+constexpr const char* c_completeTrackFile = "..\\Data\\Sounds\\mixkit-game-level-completed.wav";
+constexpr const char* c_failTrackFile = "..\\Data\\Sounds\\mixkit-player-losing.wav";
+constexpr const char* c_keyPickupTrackFile = "..\\Data\\Sounds\\mixkit-unlock.wav";
 
 SoundManager::SoundManager()
 {
@@ -29,6 +31,22 @@ SoundManager::SoundManager()
     }
 
     m_completeTrack.setVolume(0.2f);
+
+    result = m_failTrack.load(c_failTrackFile);
+    if (result != SoLoud::SO_NO_ERROR)
+    {
+        LOGI("Failed to load sound file %s with error code %d", c_failTrackFile, result);
+    }
+
+    m_failTrack.setVolume(0.2f);
+
+    result = m_keyPickupTrack.load(c_keyPickupTrackFile);
+    if (result != SoLoud::SO_NO_ERROR)
+    {
+        LOGI("Failed to load sound file %s with error code %d", c_keyPickupTrackFile, result);
+    }
+
+    m_keyPickupTrack.setVolume(0.2f);
 }
 
 SoundManager::~SoundManager()
@@ -44,4 +62,14 @@ void SoundManager::PlayBackgroundSound()
 void SoundManager::PlayCompleteSound()
 {
     m_soloudEngine.play(m_completeTrack);
+}
+
+void SoundManager::PlayFailSound()
+{
+    m_soloudEngine.play(m_failTrack);
+}
+
+void SoundManager::PlayKeyPickupSound()
+{
+    m_soloudEngine.play(m_keyPickupTrack);
 }

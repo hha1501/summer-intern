@@ -24,7 +24,8 @@ namespace Agvt
     GameWorld::GameWorld() : m_worldCamera{}, m_tiles{}, m_entities{}, m_keys{}, m_doorTile{}, m_player{},
         m_keysToCollectCount{}, m_gameOver(false), m_playerExited(false),
         m_currentGravityDirection{},
-        m_mapWidth{}, m_mapHeight{}, m_mapLookup{}, m_keyLookup{}, m_entityUpdateQueue{}, m_entitiesListChanged(false), m_keysListChanged(false)
+        m_mapWidth{}, m_mapHeight{}, m_mapLookup{}, m_keyLookup{}, m_entityUpdateQueue{}, m_entitiesListChanged(false), m_keysListChanged(false),
+        m_soundManager{}
     {
     }
 
@@ -32,6 +33,8 @@ namespace Agvt
     {
         m_worldCamera = std::make_shared<Camera>(0, 0.0f, c_mapWidth, c_mapHeight, 0.0f, -1.0f, 1.0f, 0.0f);
         m_stateMachine.Init(this, Application::GetInstance()->GetInputManager());
+
+        m_soundManager = Application::GetInstance()->GetSoundManager();
 
         if (LoadMap(level))
         {
@@ -596,6 +599,8 @@ namespace Agvt
         {
             m_doorTile->SetAtlasCoord(Vector2Int(1, 0));
         }
+
+        m_soundManager->PlayKeyPickupSound();
     }
 
     void GameWorld::OnEntityGoOutOfBounds(Entity* entity, Vector2Int newPosition, GridSlot& currentGridSlot)

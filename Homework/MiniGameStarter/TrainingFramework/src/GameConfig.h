@@ -26,7 +26,7 @@ public:
 };
 
 // define value
-#define PI 3.14f
+#define PI 3.1415926535f
 #define MAX_DEGREE 360
 // define vetex 
 #define VETEX_POSITION		(char*)0

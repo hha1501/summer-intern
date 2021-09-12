@@ -14,6 +14,8 @@
 
 #include "StateMachine/StateMachine.h"
 
+#include "ApplicationManagers/SoundManager.h"
+
 #include <memory>
 #include <vector>
 #include <unordered_map>
@@ -112,5 +114,7 @@ namespace Agvt
         bool m_keysListChanged;
 
         StateMachine m_stateMachine;
+
+        SoundManager* m_soundManager;
     };
 }
