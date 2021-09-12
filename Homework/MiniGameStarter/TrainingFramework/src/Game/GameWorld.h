@@ -78,6 +78,9 @@ namespace Agvt
         void OnPlayerPickupKey();
         void OnEntityGoOutOfBounds(Entity* entity, Vector2Int newPosition, GridSlot& currentGridSlot);
 
+        void OnPlayerDie();
+        void OnPlayerExit();
+
         void MarkWorldAsChanged();
         bool ApplyGravity();
 

@@ -30,7 +30,7 @@ SoundManager::SoundManager()
         LOGI("Failed to load sound file %s with error code %d", c_completeTrackFile, result);
     }
 
-    m_completeTrack.setVolume(0.2f);
+    m_completeTrack.setVolume(0.12f);
 
     result = m_failTrack.load(c_failTrackFile);
     if (result != SoLoud::SO_NO_ERROR)
@@ -38,7 +38,7 @@ SoundManager::SoundManager()
         LOGI("Failed to load sound file %s with error code %d", c_failTrackFile, result);
     }
 
-    m_failTrack.setVolume(0.2f);
+    m_failTrack.setVolume(0.12f);
 
     result = m_keyPickupTrack.load(c_keyPickupTrackFile);
     if (result != SoLoud::SO_NO_ERROR)
@@ -46,7 +46,7 @@ SoundManager::SoundManager()
         LOGI("Failed to load sound file %s with error code %d", c_keyPickupTrackFile, result);
     }
 
-    m_keyPickupTrack.setVolume(0.2f);
+    m_keyPickupTrack.setVolume(0.12f);
 }
 
 SoundManager::~SoundManager()

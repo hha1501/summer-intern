@@ -159,12 +159,6 @@ void GSPlay::OnVictory()
     Application::GetInstance()->GetSoundManager()->PlayCompleteSound();
 }
 
-void GSPlay::OnFail()
-{
-    // play fail sound
-    Application::GetInstance()->GetSoundManager()->PlayFailSound();
-}
-
 void GSPlay::OnPlayStateUpdate(float deltaTime)
 {
     m_gameWorld.Update(deltaTime);
@@ -172,10 +166,6 @@ void GSPlay::OnPlayStateUpdate(float deltaTime)
     if (m_gameWorld.IsVictory())
     {
         OnVictory();
-    }
-    else if (m_gameWorld.IsGameOver())
-    {
-        OnFail();
     }
 }
 

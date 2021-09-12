@@ -420,7 +420,7 @@ namespace Agvt
             MarkEntityAsRemoved(m_player);
             m_player = nullptr;
 
-            m_gameOver = true;
+            OnPlayerDie();
 
             // Update grid slots
             currentGridSlot = GridSlot();
@@ -470,7 +470,7 @@ namespace Agvt
             if (targetGridSlot.AsTile() == TileType::Exit && m_keysToCollectCount == 0 && m_currentGravityDirection == GravityDirection::Down)
             {
                 currentGridSlot = GridSlot();
-                m_playerExited = true;
+                OnPlayerExit();
 
                 // Update position
                 entity->SetPosition(newPosition);
@@ -611,11 +611,23 @@ namespace Agvt
         {
             m_player = nullptr;
 
-            m_gameOver = true;
+            OnPlayerDie();
         }
 
         // Update grid slots
         currentGridSlot = GridSlot();
+    }
+
+    void GameWorld::OnPlayerDie()
+    {
+        m_gameOver = true;
+        m_soundManager->PlayFailSound();
+    }
+
+    void GameWorld::OnPlayerExit()
+    {
+        m_playerExited = true;
+        m_soundManager->PlayCompleteSound();
     }
 
     void GameWorld::MarkWorldAsChanged()
