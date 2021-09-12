@@ -164,7 +164,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Include\Nvidia;$(SolutionDir)\freetype\include;$(SolutionDir)\Utilities\src;$(projectdir)\src\GameManager;$(projectdir)\src\GameObject;$(projectdir)\src\GameState;$(projectdir)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\soloud20200207\include;$(SolutionDir)Include\Nvidia;$(SolutionDir)freetype\include;$(SolutionDir)Utilities\src;$(projectdir)src\GameManager;$(projectdir)src\GameObject;$(projectdir)src\GameState;$(projectdir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -172,6 +172,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libEGL.lib;libGLESv2.lib;WinMM.Lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -187,7 +188,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Include\Angle;$(SolutionDir)\freetype\include;$(SolutionDir)\Utilities\src;$(projectdir)\src\GameManager;$(projectdir)\src\GameObject;$(projectdir)\src\GameState;$(projectdir)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\soloud20200207\include;$(SolutionDir)Include\Angle;$(SolutionDir)freetype\include;$(SolutionDir)Utilities\src;$(projectdir)src\GameManager;$(projectdir)src\GameObject;$(projectdir)src\GameState;$(projectdir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -195,6 +196,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libEGL.lib;libGLESv2.lib;WinMM.Lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -209,7 +211,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-ATI|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Include\ATI;$(SolutionDir)\freetype\include;$(SolutionDir)\Utilities\src;$(projectdir)\src\GameManager;$(projectdir)\src\GameObject;$(projectdir)\src\GameState;$(projectdir)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\soloud20200207\include;$(SolutionDir)Include\ATI;$(SolutionDir)freetype\include;$(SolutionDir)Utilities\src;$(projectdir)src\GameManager;$(projectdir)src\GameObject;$(projectdir)src\GameState;$(projectdir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -218,6 +220,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libEGL.lib;libGLESv2.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -231,7 +234,7 @@
     <ClCompile>
       <Optimization>MaxSpeed</Optimization>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Include\ATI;$(SolutionDir)\freetype\include;$(SolutionDir)\Utilities\src;$(projectdir)\src\GameManager;$(projectdir)\src\GameObject;$(projectdir)\src\GameState;$(projectdir)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\soloud20200207\include;$(SolutionDir)Include\ATI;$(SolutionDir)freetype\include;$(SolutionDir)Utilities\src;$(projectdir)src\GameManager;$(projectdir)src\GameObject;$(projectdir)src\GameState;$(projectdir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -239,6 +242,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libEGL.lib;libGLESv2.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -253,7 +257,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-AMD|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Include\AMD;$(SolutionDir)\freetype\include;$(SolutionDir)\Utilities\src;$(projectdir)\src\GameManager;$(projectdir)\src\GameObject;$(projectdir)\src\GameState;$(projectdir)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\soloud20200207\include;$(SolutionDir)Include\AMD;$(SolutionDir)freetype\include;$(SolutionDir)Utilities\src;$(projectdir)src\GameManager;$(projectdir)src\GameObject;$(projectdir)src\GameState;$(projectdir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -262,6 +266,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libEGL.lib;libGLESv2.lib;%(AdditionalDependencies)</AdditionalDependencies>
@@ -274,7 +279,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug-Angle|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>$(SolutionDir)\Include\Angle;$(SolutionDir)\freetype\include;$(SolutionDir)\Utilities\src;$(projectdir)\src\GameManager;$(projectdir)\src\GameObject;$(projectdir)\src\GameState;$(projectdir)\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vendor\soloud20200207\include;$(SolutionDir)Include\Angle;$(SolutionDir)freetype\include;$(SolutionDir)Utilities\src;$(projectdir)src\GameManager;$(projectdir)src\GameObject;$(projectdir)src\GameState;$(projectdir)src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -283,6 +288,7 @@
       </PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <AdditionalDependencies>libEGL.lib;libGLESv2.lib;%(AdditionalDependencies)</AdditionalDependencies>
