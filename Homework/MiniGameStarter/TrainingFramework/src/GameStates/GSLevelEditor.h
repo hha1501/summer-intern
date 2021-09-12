@@ -47,6 +47,6 @@ private:
     int m_selectedLevelID;
 
 
-    GameWorldEditor m_gameWorldEditor;
+    Agvt::GameWorldEditor m_gameWorldEditor;
 };
 

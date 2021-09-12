@@ -2,9 +2,12 @@
 
 #include <stdint.h>
 
-enum class TileType : uint8_t
+namespace Agvt
 {
-    Empty,
-    Wall,
-    Exit
-};
+    enum class TileType : uint8_t
+    {
+        Empty,
+        Wall,
+        Exit
+    };
+}

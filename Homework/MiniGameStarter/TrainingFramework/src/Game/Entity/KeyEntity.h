@@ -2,8 +2,11 @@
 
 #include "Entity.h"
 
-class KeyEntity : public Entity
+namespace Agvt
 {
-public:
-    KeyEntity(std::unique_ptr<Sprite2D> sprite);
-};
+	class KeyEntity : public Entity
+	{
+	public:
+		KeyEntity(std::unique_ptr<Sprite2D> sprite);
+	};
+}

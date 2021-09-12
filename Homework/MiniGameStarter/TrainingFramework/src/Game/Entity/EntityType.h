@@ -2,10 +2,13 @@
 
 #include <stdint.h>
 
-enum class EntityType : uint8_t
+namespace Agvt
 {
-    Player,
-    Rock,
-    Box,
-    Key
-};
+    enum class EntityType : uint8_t
+    {
+        Player,
+        Rock,
+        Box,
+        Key
+    };
+}

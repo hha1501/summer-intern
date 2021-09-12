@@ -50,7 +50,7 @@ private:
 
     std::unique_ptr<Sprite2D> m_victoryPanel;
 
-    GameWorld m_gameWorld;
+    Agvt::GameWorld m_gameWorld;
     const InputManager* m_inputManager;
     const SessionManager* m_sessionManager;
 

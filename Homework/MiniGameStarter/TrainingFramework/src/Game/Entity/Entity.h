@@ -5,51 +5,54 @@
 #include "Sprite2D.h"
 #include "../Common/Vector2Int.h"
 
-class Entity
+namespace Agvt
 {
-public:
-    virtual ~Entity() = default;
-
-    EntityType GetType() const { return m_entityType; }
-
-    void Draw()
-    { 
-        m_sprite->Draw();
-    }
-
-    const Vector2Int& GetGridPosition() const
+    class Entity
     {
-        return m_gridPosition;
-    }
+    public:
+        virtual ~Entity() = default;
 
-    bool IsValid() const
-    {
-        return m_valid;
-    }
-    void Invalidate()
-    {
-        m_valid = false;
-    }
+        EntityType GetType() const { return m_entityType; }
 
-    void SetPosition(Vector2Int gridPosition);
-    void SetRotation(Vector3 rotation);
-    void SetCamera(std::shared_ptr<Camera> camera);
+        void Draw()
+        {
+            m_sprite->Draw();
+        }
 
-    virtual void Update(float deltaTime)
-    {
-    }
+        const Vector2Int& GetGridPosition() const
+        {
+            return m_gridPosition;
+        }
 
-protected:
-    Entity(EntityType entityType, std::unique_ptr<Sprite2D> sprite) : m_entityType(entityType), m_sprite(std::move(sprite)), m_valid(true)
-    {
-    }
+        bool IsValid() const
+        {
+            return m_valid;
+        }
+        void Invalidate()
+        {
+            m_valid = false;
+        }
 
-protected:
-    std::unique_ptr<Sprite2D> m_sprite;
+        void SetPosition(Vector2Int gridPosition);
+        void SetRotation(Vector3 rotation);
+        void SetCamera(std::shared_ptr<Camera> camera);
 
-    Vector2Int m_gridPosition;
+        virtual void Update(float deltaTime)
+        {
+        }
 
-private:
-    EntityType m_entityType;
-    bool m_valid;
-};
+    protected:
+        Entity(EntityType entityType, std::unique_ptr<Sprite2D> sprite) : m_entityType(entityType), m_sprite(std::move(sprite)), m_valid(true)
+        {
+        }
+
+    protected:
+        std::unique_ptr<Sprite2D> m_sprite;
+
+        Vector2Int m_gridPosition;
+
+    private:
+        EntityType m_entityType;
+        bool m_valid;
+    };
+}

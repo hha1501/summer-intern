@@ -11,7 +11,7 @@
 #include "GameButton.h"
 #include "Application.h"
 
-GSLevelEditor::GSLevelEditor() : m_selectedLevelID(-1), m_inDrawingMode(true)
+GSLevelEditor::GSLevelEditor() : m_selectedLevelID(-1), m_inputManager{}, m_inDrawingMode(true)
 {
 }
 

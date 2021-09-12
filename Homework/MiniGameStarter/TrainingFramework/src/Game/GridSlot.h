@@ -5,50 +5,53 @@
 
 #include <stdint.h>
 
-class GridSlot
+namespace Agvt
 {
-public:
-	enum class ContentType : uint8_t
+	class GridSlot
 	{
-		Empty,
-		Tile,
-		Entity
+	public:
+		enum class ContentType : uint8_t
+		{
+			Empty,
+			Tile,
+			Entity
+		};
+
+	public:
+		GridSlot() : m_contentType(ContentType::Empty), m_container{}
+		{
+		}
+		explicit GridSlot(TileType tileType) : m_contentType(ContentType::Tile)
+		{
+			m_container.tileType = tileType;
+		}
+		explicit GridSlot(Entity* entity) : m_contentType(ContentType::Entity)
+		{
+			m_container.entity = entity;
+		}
+
+		ContentType Type() const
+		{
+			return m_contentType;
+		}
+
+		TileType AsTile() const
+		{
+			return m_container.tileType;
+		}
+		Entity* AsEntity() const
+		{
+			return m_container.entity;
+		}
+
+	private:
+		union Container
+		{
+			TileType tileType;
+			Entity* entity;
+		};
+
+		ContentType m_contentType;
+		Container m_container;
 	};
-
-public:
-	GridSlot() : m_contentType(ContentType::Empty), m_container{}
-	{
-	}
-	explicit GridSlot(TileType tileType) : m_contentType(ContentType::Tile)
-	{
-		m_container.tileType = tileType;
-	}
-	explicit GridSlot(Entity* entity) : m_contentType(ContentType::Entity)
-	{
-		m_container.entity = entity;
-	}
-
-	ContentType Type() const
-	{
-		return m_contentType;
-	}
-
-	TileType AsTile() const
-	{
-		return m_container.tileType;
-	}
-	Entity* AsEntity() const
-	{
-		return m_container.entity;
-	}
-
-private:
-	union Container
-	{
-		TileType tileType;
-		Entity* entity;
-	};
-
-	ContentType m_contentType;
-	Container m_container;
-};
+}
