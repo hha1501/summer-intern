@@ -3,7 +3,7 @@
 
 #include <array>
 
-GSTutorial::GSTutorial() : GameStateBase(StateType::STATE_CREDIT), m_listButton{}, m_buttonLeft{}, m_buttonRight{},
+GSTutorial::GSTutorial() : GameStateBase(StateType::STATE_TUTORIAL), m_listButton{}, m_buttonLeft{}, m_buttonRight{},
 m_currentPanelIndex{}
 {
 }

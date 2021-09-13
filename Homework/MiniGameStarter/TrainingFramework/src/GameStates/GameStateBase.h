@@ -8,7 +8,7 @@ class GameStateBase
 public:
 	GameStateBase() : m_stateType(StateType::STATE_INVALID){}
 	GameStateBase(StateType stateType);
-	virtual ~GameStateBase() {}
+	virtual ~GameStateBase() = default;
 
 	virtual void Init() = 0;
 	virtual void Exit() = 0;

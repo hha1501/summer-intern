@@ -9,10 +9,9 @@ namespace Agvt
 {
     constexpr float Lerp(float a, float b, float t);
 
-    GravitySelectState::GravitySelectState(StateMachine* managingStateMachine) : StateBase(managingStateMachine)
+    GravitySelectState::GravitySelectState(StateMachine* managingStateMachine) : StateBase(managingStateMachine),
+        m_sourceAngle{}, m_targetAngle{}, m_animationTimer{}, m_inAnimation(false)
     {
-        m_animationTimer = 0.0f;
-        m_inAnimation = false;
     }
 
     void GravitySelectState::Update(float deltaTime)
@@ -53,7 +52,7 @@ namespace Agvt
             BeginRotationAnimation((size_t)(gameWorld->m_currentGravityDirection), (size_t)GameWorld::GravityDirection::Right);
             gameWorld->SetGravity(GameWorld::GravityDirection::Right);
         }
-        else if (inputManager->KeyDown(KeyCode::G))
+        else if (inputManager->KeyDown(KeyCode::SPACE))
         {
             m_managingStateMachine->ChangeState(StateType::Updating);
         }

@@ -9,6 +9,8 @@ public:
     SoundManager();
     ~SoundManager();
 
+    void ToggleSoundOnOff(bool on);
+
     void PlayBackgroundSound();
 
     void PlayCompleteSound();

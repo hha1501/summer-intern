@@ -15,7 +15,7 @@
 
 constexpr float c_victoryWaitTime = 2.0f;
 
-GSPlay::GSPlay() : m_state(State::Play), m_victoryWaitTime{}
+GSPlay::GSPlay() : GameStateBase(StateType::STATE_PLAY), m_state{}, m_victoryWaitTime{}
 {
     m_inputManager = Application::GetInstance()->GetInputManager();
     m_sessionManager = Application::GetInstance()->GetSessionManager();
@@ -111,6 +111,11 @@ void GSPlay::Update(float deltaTime)
         break;
     default:
         break;
+    }
+
+    if (m_inputManager->KeyDown(KeyCode::R))
+    {
+        RestartGameWorld();
     }
 }
 

@@ -8,9 +8,8 @@ namespace Agvt
     constexpr float c_updateTime = 0.2f;
     constexpr float c_initialTimerValueAfterPlayerMovement = 0.1f;
 
-    UpdateState::UpdateState(StateMachine* managingStateMachine) : StateBase(managingStateMachine)
+    UpdateState::UpdateState(StateMachine* managingStateMachine) : StateBase(managingStateMachine), m_updateTimer{}
     {
-        m_updateTimer = 0.0f;
     }
 
     void UpdateState::Update(float deltaTime)

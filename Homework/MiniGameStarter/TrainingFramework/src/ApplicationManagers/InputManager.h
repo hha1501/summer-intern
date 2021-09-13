@@ -120,8 +120,10 @@ private:
             return KeyCode::D;
         case 'E':
             return KeyCode::E;
-        case 'G':
-            return KeyCode::G;
+        case 'R':
+            return KeyCode::R;
+        case VK_SPACE:
+            return KeyCode::SPACE;
         default:
             return KeyCode::UNKNOWN;
         }

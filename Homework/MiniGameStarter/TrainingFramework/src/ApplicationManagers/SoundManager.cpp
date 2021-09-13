@@ -54,6 +54,11 @@ SoundManager::~SoundManager()
     m_soloudEngine.deinit();
 }
 
+void SoundManager::ToggleSoundOnOff(bool on)
+{
+    m_soloudEngine.setGlobalVolume(on ? 1.0f : 0.0f);
+}
+
 void SoundManager::PlayBackgroundSound()
 {
     m_soloudEngine.play(m_backgroundTrack);

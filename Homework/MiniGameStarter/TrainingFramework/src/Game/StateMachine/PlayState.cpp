@@ -28,7 +28,7 @@ namespace Agvt
                 m_managingStateMachine->ChangeState(StateType::Updating);
             }
         }
-        else if (inputManager->KeyDown(KeyCode::G))
+        else if (inputManager->KeyDown(KeyCode::SPACE))
         {
             m_managingStateMachine->ChangeState(StateType::GravitySelecting);
         }

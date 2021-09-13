@@ -7,10 +7,6 @@ GameButton::GameButton(std::shared_ptr<Model> model, std::shared_ptr<Shader> sha
 {
 }
 
-GameButton::~GameButton()
-{
-}
-
 void GameButton::SetOnClick(std::function<void()> clickCallback)
 {
 	m_clickCallback = clickCallback;
