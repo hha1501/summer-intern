@@ -69,7 +69,7 @@ void GSMenu::Init()
     // sound on button
     texture = ResourceManagers::GetInstance()->GetTexture("button_sound_on.tga");
     std::unique_ptr<GameButton> buttonSoundOn = std::make_unique<GameButton>(model, shader, texture);
-    buttonSoundOn->Set2DPosition(Globals::screenWidth - 80, 30);
+    buttonSoundOn->Set2DPosition(Globals::screenWidth - 90, 30);
     buttonSoundOn->SetSize(50, 50);
     buttonSoundOn->SetOnClick([this]()
     {
@@ -81,7 +81,7 @@ void GSMenu::Init()
     // sound off button
     texture = ResourceManagers::GetInstance()->GetTexture("button_sound_off.tga");
     std::unique_ptr<GameButton> buttonSoundOff = std::make_unique<GameButton>(model, shader, texture);
-    buttonSoundOff->Set2DPosition(Globals::screenWidth - 80, 30);
+    buttonSoundOff->Set2DPosition(Globals::screenWidth - 90, 30);
     buttonSoundOff->SetSize(50, 50);
     buttonSoundOff->SetOnClick([this]()
     {
